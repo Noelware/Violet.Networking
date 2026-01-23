@@ -50,7 +50,11 @@ files=(
 
 for dir in "${dirs[@]}"; do
     echo "[violet/tools:bazeldist] copying directory $dir ~> $SCRIPT_DIR/.bazeldist/$dir"
-    cp -r "$SCRIPT_DIR/$dir" "$SCRIPT_DIR/.bazeldist"
+    if [ "$dir" == "rust" ]; then
+        rsync -a --exclude 'target'  "$SCRIPT_DIR/$dir" "$SCRIPT_DIR/.bazeldist"
+    else
+        cp -r "$SCRIPT_DIR/$dir" "$SCRIPT_DIR/.bazeldist"
+    fi
 
     if [ "$dir" == "bazel" ]; then
         rm -rf "$SCRIPT_DIR/.bazeldist/bazel/deps"
