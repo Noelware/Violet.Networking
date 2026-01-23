@@ -1,0 +1,48 @@
+# 🌺💜 Violet.Networking: C++20 library that provides networking primitives
+# Copyright (c) 2026 Noelware, LLC. <team@noelware.org>, et al.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+bazel_dep(name = "rules_rust", version = "0.68.1")
+
+## Configure Rust toolchain
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(
+    edition = "2024",
+    sha256s = {
+        "2025-01-19/cargo-nightly-x86_64-unknown-linux-gnu.tar.xz": "64670b3b8da31e211bc4aba09f4748ea6ad7a86ea4b4648d2c3c13825c8ac085",
+        "2025-01-19/clippy-nightly-x86_64-unknown-linux-gnu.tar.xz": "4c474fb1384d74e279a941a85f23f8c871ff2f36244777761dd0e619bc83299a",
+        "2025-01-19/llvm-tools-nightly-x86_64-unknown-linux-gnu.tar.xz": "7f606009eafde4b6b3a08ac9f91353341be6bf73b12b711fc8803deaab12247d",
+        "2025-01-19/rust-std-nightly-x86_64-unknown-linux-gnu.tar.xz": "7637630d6b2437d12e6b4db7289ab9ba625a12b0101a0d04e7e768fbd8224092",
+        "2025-01-19/rustc-nightly-x86_64-unknown-linux-gnu.tar.xz": "e280c3342e333198588f4743c569046e2f25ccea4d6cd381c818333f528958a0",
+    },
+    versions = [
+        # keep in-sync with `rust-toolchain.toml`
+        "nightly/2025-01-19",
+    ],
+)
+
+## Configure crate dependencies
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+crate.from_cargo(
+    name = "crates",
+    cargo_lockfile = "//rust:Cargo.lock",
+    manifests = ["//rust:Cargo.toml"],
+)
+use_repo(crate, "crates")

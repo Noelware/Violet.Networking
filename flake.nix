@@ -1,0 +1,78 @@
+# 🌺💜 Violet.Networking: C++20 library that provides networking primitives
+# Copyright (c) 2026 Noelware, LLC. <team@noelware.org>, et al.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+{
+  description = "🌺💜 C++20 library that provides networking primitives";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-compat = {
+      url = "github:edolstra/flake-compat";
+      flake = false;
+    };
+
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs = {
+        follows = "nixpkgs";
+      };
+    };
+  };
+
+  outputs = {
+    self,
+    nixpkgs,
+    rust-overlay,
+    ...
+  }: let
+    systems = [
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
+
+    overlays = [
+      (import rust-overlay)
+    ];
+
+    eachSystem = f:
+      nixpkgs.lib.genAttrs systems (system:
+        f (import nixpkgs {
+          inherit system overlays;
+        }));
+  in {
+    formatter = eachSystem (pkgs: pkgs.alejandra);
+    devShells = eachSystem (pkgs: {
+      default = pkgs.callPackage ./nix/devshell.nix {};
+    });
+
+    overlays.default = import ./nix;
+    packages = eachSystem (pkgs: let
+      overlay = self.overlays.default {} pkgs;
+    in
+      builtins.listToAttrs (map (key: {
+        name = key;
+        value = overlay.${key};
+      }) (builtins.attrNames overlay))
+      // {
+        default = overlay.violet.networking;
+      });
+  };
+}
