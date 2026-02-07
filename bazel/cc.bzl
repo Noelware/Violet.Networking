@@ -20,7 +20,7 @@
 # SOFTWARE.
 
 load("@rules_cc//cc:defs.bzl", cc_library_ = "cc_library", cc_test_ = "cc_test")
-load(":version.bzl", "encode_as_int")
+load(":version.bzl", "DEVBUILD", "encode_as_int")
 
 SANITIZER_OPTS = select({
     "//bazel/flags:asan_enabled": ["-fsanitize=address"],
@@ -47,27 +47,6 @@ SANITIZER_ENV = select({
 }) | select({
     "//bazel/flags:tsan_enabled": {"MSAN_OPTIONS": ":".join(MSAN_OPTS)},
     "//conditions:default": {},
-})
-
-OS_DEFINES = select({
-    "@platforms//os:linux": ["VIOLET_UNIX", "VIOLET_LINUX", "_GNU_SOURCE"],
-    "@platforms//os:macos": ["VIOLET_UNIX", "VIOLET_APPLE_MACOS"],
-    "@platforms//os:windows": ["VIOLET_WINDOWS"],
-    "//conditions:default": [],
-})
-
-ARCH_DEFINES = select({
-    "@platforms//cpu:aarch64": ["VIOLET_AARCH64"],
-    "@platforms//cpu:x86_64": ["VIOLET_X86_64"],
-    "//conditions:default": [],
-})
-
-COMPILER_DEFINES = select({
-    "@rules_cc//cc/compiler:clang": ["VIOLET_CLANG"],
-    "@rules_cc//cc/compiler:clang-cl": ["VIOLET_CLANG"],
-    "@rules_cc//cc/compiler:gcc": ["VIOLET_GCC"],
-    "@rules_cc//cc/compiler:msvc-cl": ["VIOLET_MSVC"],
-    "//conditions:default": [],
 })
 
 COMPILER_COPTS = select({
@@ -97,8 +76,9 @@ def cc_library(name, hdrs = [], **kwargs):
         copts = copts + SANITIZER_OPTS + COMPILER_COPTS,
         linkopts = linkopts + SANITIZER_OPTS,
         includes = ["include"],
-        defines = ["BAZEL"] + OS_DEFINES + ARCH_DEFINES + COMPILER_DEFINES + [
+        defines = ["BAZEL"] + [
             "VIOLET_NET_VERSION=%d" % encode_as_int(),
+            "VIOLET_NET_DEVBUILD=%d" % (1 if DEVBUILD else 0),
         ],
         deps = deps,
         **kwargs
