@@ -23,16 +23,14 @@
 
 #pragma once
 
-// NOLINTBEGIN(modernize-deprecated-headers)
+// NOLINTBEGIN(modernize-deprecated-headers,modernize-use-using,performance-enum-size,modernize-use-trailing-return-type)
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-// NOLINTEND(modernize-deprecated-headers)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// NOLINTBEGIN(modernize-use-using,performance-enum-size,modernize-use-trailing-return-type)
 
 /// A opaque, allocated value to a Rust [`url::Url`].
 ///
@@ -139,8 +137,9 @@ typedef struct violet_net_optional_uint16 {
 /// } else {
 ///     printf("%s", violet_net_url_as_str(url));
 ///     violet_net_url_free(url);
-///     return 0;
 /// }
+///
+/// return 0;
 /// ```
 ///
 /// @param input the input to use
@@ -169,8 +168,8 @@ violet_net_optional_string_view violet_net_url_query(const violet_net_url_t* url
 violet_net_optional_string_view violet_net_url_fragment(const violet_net_url_t* url);
 char* violet_net_url_strerror(violet_net_url_error_t error);
 
-// NOLINTEND(modernize-use-using,performance-enum-size,modernize-use-trailing-return-type)
-
 #ifdef __cplusplus
 }
 #endif
+
+// NOLINTEND(modernize-deprecated-headers,modernize-use-using,performance-enum-size,modernize-use-trailing-return-type)

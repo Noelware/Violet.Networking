@@ -43,6 +43,18 @@ build:macos --cxxopt=-fno-modules
 # this doesn't work so we can have enable C++20 modules soon:tm:
 build:macos --features=-layering_check --features=-parse_headers
 
+# C++: Disable annoying warnings
+build:linux --cxxopt=-Wno-unused-command-line-argument
+build:linux --host_cxxopt=-Wno-unused-command-line-argument
+build:macos --cxxopt=-Wno-unused-command-line-argument
+build:macos --host_cxxopt=-Wno-unused-command-line-argument
+
+# `--config=libcxx`: Enables compilation and linking with libc++
+build:libcxx --cxxopt=-stdlib=libc++
+build:libcxx --linkopt=-stdlib=libc++
+build:libcxx --linkopt=-lc++
+build:libcxx --linkopt=-lc++abi
+
 # Only show errors in test output
 test --test_output=errors
 

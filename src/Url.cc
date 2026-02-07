@@ -61,17 +61,17 @@ auto Url::Parse(Str input) noexcept -> Result<Url, UrlError>
     return Url(handle);
 }
 
-// auto Url::ParseWithParams(Str input, Span<CStr> params) noexcept -> Result<Url, UrlError>
-// {
-//     violet_net_url_error_t error = URL_UNKNOWN;
-//     auto* handle = ::violet_net_url_new_with_params(input.data(), params.data(), params.size(), &error);
-//     if (error != URL_OK) {
-//         return Err(UrlError(error));
-//     }
+auto Url::ParseWithParams(Str input, Span<CStr> params) noexcept -> Result<Url, UrlError>
+{
+    violet_net_url_error_t error = URL_UNKNOWN;
+    auto* handle = ::violet_net_url_new_with_params(input.data(), params.data(), params.size(), &error);
+    if (error != URL_OK) {
+        return Err(UrlError(error));
+    }
 
-//     VIOLET_DEBUG_ASSERT(handle != nullptr, "received a nullptr in a successful case");
-//     return Url(handle);
-// }
+    VIOLET_DEBUG_ASSERT(handle != nullptr, "received a nullptr in a successful case");
+    return Url(handle);
+}
 
 auto Url::Join(Str path) const noexcept -> Result<Url, UrlError>
 {
@@ -111,6 +111,14 @@ auto Url::HasAuthority() const noexcept -> bool
 {
     VIOLET_DEBUG_ASSERT(this->n_handle != nullptr, "url handle is not valid");
     return ::violet_net_url_has_authority(this->n_handle);
+}
+
+auto Url::Authority() const noexcept -> Str
+{
+    VIOLET_DEBUG_ASSERT(this->n_handle != nullptr, "url handle is not valid");
+    auto view = ::violet_net_url_authority(this->n_handle);
+
+    return { view.data, view.len };
 }
 
 auto Url::Username() const noexcept -> Optional<Str>
@@ -167,6 +175,17 @@ auto Url::Host() const noexcept -> Optional<Str>
 {
     VIOLET_DEBUG_ASSERT(this->n_handle != nullptr, "url handle is not valid");
     auto view = ::violet_net_url_host(this->n_handle);
+    if (!view.something) {
+        return Nothing;
+    }
+
+    return Some<Str>(view.data.data, view.data.len);
+}
+
+auto Url::Domain() const noexcept -> Optional<Str>
+{
+    VIOLET_DEBUG_ASSERT(this->n_handle != nullptr, "url handle is not valid");
+    auto view = ::violet_net_url_domain(this->n_handle);
     if (!view.something) {
         return Nothing;
     }

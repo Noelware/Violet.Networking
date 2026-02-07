@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+# +---------------------------------------------------------------------+
 # 🌺💜 Violet.Networking: C++20 library that provides networking primitives
 # Copyright (c) 2026 Noelware, LLC. <team@noelware.org>, et al.
 #
@@ -18,3 +20,13 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+# +----------------------------------------------------------------------+
+
+if ! command -v bazel >/dev/null; then
+    echo "[violet/tooling:rust-project] FATAL: unable to find \`bazel\` command"
+    exit 1
+fi
+
+exec bazel run @rules_rust//tools/rust_analyzer:discover_bazel_rust_project -- \
+    --bazel_arg=--watchfs \
+    ${1:+"$1"} 2>/dev/null

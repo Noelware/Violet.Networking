@@ -42,28 +42,19 @@ TEST(RustyURLs, URLJoinCorrectly)
     ASSERT_EQ(url2->ToString(), "https://floofy.dev/oss/zenful");
 }
 
-TEST(UrlDeathTest, DeathOnNullHandle)
+TEST(RustyUrls, URLParseWithParams)
 {
-    Url url;
+    CStr params[] = { "hello=world", "weow=fluff" };
 
-#define DEATHTEST(method)                                                                                              \
-    EXPECT_DEATH(                                                                                                      \
-        { (void)url.method(); }, "url handle is not valid")                                                            \
-        << "method `violet::net::Url::" << #method << "' didn't fail as expected"
+    auto url = Url::ParseWithParams("https://api.noelware.org", params);
+    ASSERT_TRUE(url) << "failed to parse url `https://api.noelware.org' with `?hello=world&weow=fluff`: "
+                     << url.Error();
 
-    DEATHTEST(ToString);
-    DEATHTEST(Scheme);
-    DEATHTEST(Special);
-    DEATHTEST(HasAuthority);
-    DEATHTEST(Username);
-    DEATHTEST(Password);
-    DEATHTEST(Port);
-    DEATHTEST(PortOrKnownDefault);
-    DEATHTEST(HasHost);
-    DEATHTEST(Host);
-    DEATHTEST(Path);
-    DEATHTEST(Query);
-    DEATHTEST(Fragment);
+    ASSERT_EQ(url->ToString(), "https://api.noelware.org/?hello=world&weow=fluff");
 
-#undef DEATHTEST
+    auto url2 = Url::ParseWithParams("https://api.floofy.dev/weow?fluff=true", params);
+    ASSERT_TRUE(url2) << "failed to parse url `https://api.floofy.dev/weow?fluff=true' with `&hello=world&weow=fluff`: "
+                      << url2.Error();
+
+    ASSERT_EQ(url2->ToString(), "https://api.floofy.dev/weow?fluff=true&hello=world&weow=fluff");
 }

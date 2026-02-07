@@ -26,23 +26,27 @@ rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2024",
     sha256s = {
-        "2025-01-19/cargo-nightly-x86_64-unknown-linux-gnu.tar.xz": "64670b3b8da31e211bc4aba09f4748ea6ad7a86ea4b4648d2c3c13825c8ac085",
-        "2025-01-19/clippy-nightly-x86_64-unknown-linux-gnu.tar.xz": "4c474fb1384d74e279a941a85f23f8c871ff2f36244777761dd0e619bc83299a",
-        "2025-01-19/llvm-tools-nightly-x86_64-unknown-linux-gnu.tar.xz": "7f606009eafde4b6b3a08ac9f91353341be6bf73b12b711fc8803deaab12247d",
-        "2025-01-19/rust-std-nightly-x86_64-unknown-linux-gnu.tar.xz": "7637630d6b2437d12e6b4db7289ab9ba625a12b0101a0d04e7e768fbd8224092",
-        "2025-01-19/rustc-nightly-x86_64-unknown-linux-gnu.tar.xz": "e280c3342e333198588f4743c569046e2f25ccea4d6cd381c818333f528958a0",
+        "2025-02-06/cargo-nightly-x86_64-unknown-linux-gnu.tar.xz": "acd3d3c1722183917859039645836084beac939c4ccc00dfcee095d308980dbb",
+        "2025-02-06/clippy-nightly-x86_64-unknown-linux-gnu.tar.xz": "82016d98fe14300bb9ae8d034dc98677ea06ef8115ddb703d56c697392f29cce",
+        "2025-02-06/llvm-tools-nightly-x86_64-unknown-linux-gnu.tar.xz": "40954e1f4aee937aa71dfe2c5ae4366eb5057b78586da35dfcd480612371f3f2",
+        "2025-02-06/rust-std-nightly-x86_64-unknown-linux-gnu.tar.xz": "5e23b4dc43ac81f7b85ab346337590a0bc6ebe7ba0d06990f81ec238dc782003",
+        "2025-02-06/rustc-nightly-x86_64-unknown-linux-gnu.tar.xz": "7fd3955cc64b9b4a2edd45e365988c9f8cd20defef80d0d785606b554f617d39",
     },
     versions = [
         # keep in-sync with `rust-toolchain.toml`
-        "nightly/2025-01-19",
+        "nightly/2025-02-06",
     ],
 )
 
 ## Configure crate dependencies
 crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
-crate.from_cargo(
-    name = "crates",
-    cargo_lockfile = "//rust:Cargo.lock",
-    manifests = ["//rust:Cargo.toml"],
+crate.spec(
+    package = "url",
+    version = "2.5.7",
 )
+crate.spec(
+    package = "libc",
+    version = "0.2.180",
+)
+crate.from_specs()
 use_repo(crate, "crates")

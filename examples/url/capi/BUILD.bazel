@@ -19,4 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-exports_files(glob(["*.h"]))
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "capi",
+    srcs = ["main.c"],
+    visibility = ["//visibility:public"],
+    deps = ["//src:url_c"],
+)

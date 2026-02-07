@@ -45,6 +45,11 @@
     // Rust
     "rust-analyzer.check.command": "clippy",
     "rust-analyzer.showUnlinkedFileNotification": false,
+    "rust-analyzer.workspace.discoverConfig": {
+        "command": ["./hack/tooling/rust-project.sh", "{arg}"],
+        "progressLabel": "rust_analyzer",
+        "filesToWatch": ["BUILD", "BUILD.bazel", "MODULE.bazel"]
+    },
 
     "[cmake]": {
         "editor.defaultFormatter": "ms-vscode.cmake-tools"

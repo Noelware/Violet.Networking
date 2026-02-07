@@ -112,11 +112,13 @@
       "@ripgrep@"
       "@compiler-rt@"
       "@libcxx@"
+      "@libcxx.dev@"
     ] [
       "${bash}"
       "${ripgrep}"
       "${llvm.compiler-rt.dev}"
       "${llvm.libcxx}"
+      "${llvm.libcxx.dev}"
     ]
     devshell;
 in

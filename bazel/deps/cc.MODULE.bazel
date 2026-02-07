@@ -23,22 +23,22 @@ bazel_dep(name = "googletest", version = "1.17.0.bcr.2")
 bazel_dep(name = "curl", version = "8.11.0.bcr.4")
 bazel_dep(name = "zlib", version = "1.3.1.bcr.8")
 bazel_dep(name = "zstd", version = "1.5.7")
-bazel_dep(name = "violet", version = "26.02.02")
+bazel_dep(name = "violet", version = "26.02.03")
 archive_override(
     module_name = "violet",
-    integrity = "sha256-O6sHq3fcfG8A3lDPutPJNCtdnmSbiFLXl9aj9ybRaSc=",
+    integrity = "sha256-z+cSW2IsvubvMH4rHYZ0Nn9WqHxXF7ynZde0z+CmNdM=",
     urls = [
-        # "https://artifacts.noelware.org/bazel-registry/violet/26.02.02/dist.tgz",
-        "https://github.com/Noelware/violet/releases/download/26.02.02/bazeldist.tgz",
+        # "https://artifacts.noelware.org/bazel-registry/violet/26.02.03/bazeldist.tgz",
+        "https://github.com/Noelware/violet/releases/download/26.02.03/bazeldist.tgz",
     ],
 )
 
-bazel_dep(name = "logrin", version = "26.01.02")
+bazel_dep(name = "logrin", version = "26.02")
 archive_override(
     module_name = "logrin",
-    integrity = "sha256-K6viXOHJmoM23fcQUoybQPERDNy0pekIEwUx2Nw49eM=",
+    integrity = "sha256-xFIOnq7b6u3ylQK+a2uJsKAUcP0dzpehzm5/VVxUzwA=",
     urls = [
-        # "https://artifacts.floofy.dev/bazel-registry/logrin/26.01.02/bazeldist.tgz",
-        "https://github.com/auguwu/logrin/releases/download/26.01.02/bazeldist.tgz",
+        # "https://artifacts.floofy.dev/bazel-registry/logrin/26.02/bazeldist.tgz",
+        "https://github.com/auguwu/logrin/releases/download/26.02/bazeldist.tgz",
     ],
 )
