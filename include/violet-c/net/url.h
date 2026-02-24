@@ -23,7 +23,8 @@
 
 #pragma once
 
-// NOLINTBEGIN(modernize-deprecated-headers,modernize-use-using,performance-enum-size,modernize-use-trailing-return-type)
+// NOLINTBEGIN(modernize-*,performance-enum-size)
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -172,4 +173,4 @@ char* violet_net_url_strerror(violet_net_url_error_t error);
 }
 #endif
 
-// NOLINTEND(modernize-deprecated-headers,modernize-use-using,performance-enum-size,modernize-use-trailing-return-type)
+// NOLINTEND(modernize-*,performance-enum-size)

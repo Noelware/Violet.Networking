@@ -19,27 +19,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-bazel_dep(name = "googletest", version = "1.17.0.bcr.2")
-bazel_dep(name = "curl", version = "8.11.0.bcr.4")
-bazel_dep(name = "zlib", version = "1.3.1.bcr.8")
-bazel_dep(name = "zstd", version = "1.5.7")
-bazel_dep(name = "abseil-cpp", version = "20260107.1", repo_name = "absl")
-bazel_dep(name = "violet", version = "26.03.07")
-archive_override(
-    module_name = "violet",
-    integrity = "sha256-jaOHkE4zAGd5uQmPZwIb8obXM+A5flULhnXlvTyBloE=",
-    urls = [
-        # "https://artifacts.noelware.org/bazel-registry/violet/26.03.07/bazeldist.tgz",
-        "https://github.com/Noelware/violet/releases/download/26.03.07/bazeldist.tgz",
+load("//bazel:cc.bzl", "cc_library")
+
+cc_library(
+    name = "addr_v4",
+    srcs = ["AddrV4.cc"],
+    hdrs = ["//include/violet/Networking/IP:AddrV4.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@violet//violet",
+        "@violet//violet/container",
     ],
 )
 
-bazel_dep(name = "logrin", version = "26.02.04")
-archive_override(
-    module_name = "logrin",
-    integrity = "sha256-rmtu8mM7f0QQHZnJLJZ+Na9v58MHsjJNrHCbISlNNjA=",
-    urls = [
-        # "https://artifacts.floofy.dev/bazel-registry/logrin/26.02.04/bazeldist.tgz",
-        "https://github.com/auguwu/logrin/releases/download/26.02.04/bazeldist.tgz",
+cc_library(
+    name = "addr_v6",
+    srcs = ["AddrV6.cc"],
+    hdrs = ["//include/violet/Networking/IP:AddrV6.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@absl//absl/numeric:int128",
+        "@violet//violet",
+        "@violet//violet/container",
     ],
 )

@@ -25,6 +25,7 @@ build:dbg --compilation_mode=dbg
 # For `--config=opt`, we set `--compilation_mode` to `opt`
 build:opt --compilation_mode=opt
 build:opt --copt=-DNDEBUG
+build:opt --host_copt=-DNDEBUG
 
 # For `.bazelrc`, we can specify platform-specific Bazel flags with this.
 common --enable_platform_specific_config
@@ -54,6 +55,24 @@ build:libcxx --cxxopt=-stdlib=libc++
 build:libcxx --linkopt=-stdlib=libc++
 build:libcxx --linkopt=-lc++
 build:libcxx --linkopt=-lc++abi
+
+# `--config=host-libcxx`: Enables compilation and linking with libc++
+build:host-libcxx --host_cxxopt=-stdlib=libc++
+build:host-libcxx --host_linkopt=-stdlib=libc++
+build:host-libcxx --host_linkopt=-lc++
+build:host-libcxx --host_linkopt=-lc++abi
+
+# --config=cxx20: Test with C++20 (Linux, macOS)
+build:cxx20 --cxxopt=-std=c++20
+build:cxx20 --host_cxxopt=-std=c++20
+
+# --config=cxx23: Test with C++23 (Linux, macOS)
+build:cxx23 --cxxopt=-std=c++23
+build:cxx23 --host_cxxopt=-std=c++23
+
+# --config=cxx26: Test with C++26 (Linux, macOS)
+build:cxx26 --cxxopt=-std=c++26
+build:cxx26 --host_cxxopt=-std=c++26
 
 # Only show errors in test output
 test --test_output=errors

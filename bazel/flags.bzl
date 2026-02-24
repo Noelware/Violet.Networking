@@ -20,14 +20,14 @@
 # SOFTWARE.
 
 STRING_FLAGS = {
-    # ## `--@violet.net//bazel/flags:http_client_backend=...`
+    # ## `--@violet.net//bazel/flags:http_client_backend=[curl|winhttp|none]`
     # Determines the backend for the `violet::net::HttpClient` C++ struct. By default,
     # it'll use `libcurl` as that is majorily supported on all platforms but there is
     # a WinHTTP backend for Windows users.
     #
     # You can set this to `none` and build your own backend as you wish, you can
     # view a reference at in the `src/http/backends/cURL.cc` file.
-    "http_client_backend": ["curl", "winhttp", "none"]
+    "http_client_backend": ["curl", "winhttp", "none"],
 }
 
 BOOL_FLAGS = [
@@ -58,5 +58,5 @@ BOOL_FLAGS = [
     # ## `--@violet.net//bazel/flags:asan=[True|False]`
     # Enables the Address Sanitizer that is used to catch mistakes. Because, you know,
     # I am not the sharpest tool in the shed.
-    "asan"
+    "asan",
 ]

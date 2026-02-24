@@ -22,7 +22,7 @@
 load("//bazel:cc.bzl", "cc_test")
 
 cc_test(
-    name = "url_test",
+    name = "urls",
     srcs = ["Url.test.cc"],
     deps = ["//src:url"],
 )

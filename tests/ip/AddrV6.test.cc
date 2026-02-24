@@ -1,0 +1,143 @@
+// 🌺💜 Violet.Networking: C++20 library that provides networking primitives
+// Copyright (c) 2026 Noelware, LLC. <team@noelware.org>, et al.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#include <gtest/gtest.h>
+#include <violet/Networking/IP/AddrV6.h>
+
+// NOLINTBEGIN(google-build-using-namespace)
+using namespace violet::net::ip;
+using namespace violet;
+// NOLINTEND(google-build-using-namespace)
+
+TEST(AddrV6, Defaults)
+{
+    AddrV6 v6;
+    ASSERT_TRUE(v6.Unspecified());
+    ASSERT_FALSE(v6.Loopback());
+    ASSERT_FALSE(v6.Multicast());
+}
+
+TEST(AddrV6, LoopbackAndUnspecified)
+{
+    auto loop = AddrV6::Localhost();
+    ASSERT_TRUE(loop.Loopback());
+    EXPECT_FALSE(loop.Unspecified());
+
+    AddrV6 unspec;
+    ASSERT_TRUE(unspec.Unspecified());
+    EXPECT_FALSE(unspec.Loopback());
+}
+
+TEST(AddrV6, Multicast)
+{
+    Array<UInt8, 16> multicast_{};
+    multicast_[0] = 0xFF;
+
+    AddrV6 multicast(multicast_);
+    ASSERT_TRUE(multicast.Multicast());
+    EXPECT_FALSE(multicast.Unicast());
+}
+
+TEST(AddrV6, IPv4MappedDetection)
+{
+    Array<UInt8, 16> mapped{};
+    mapped[10] = 0xFF;
+    mapped[11] = 0xFF;
+    mapped[12] = 192;
+    mapped[13] = 0;
+    mapped[14] = 2;
+    mapped[15] = 128;
+
+    AddrV6 ip4(mapped);
+    EXPECT_TRUE(ip4.IPv4Mapped());
+    EXPECT_EQ(ip4.ToString(), "::ffff:192.0.2.128");
+}
+
+TEST(AddrV6, RFC5952Formatting)
+{
+    AddrV6 addr(0x2001, 0x0db8, 0, 0, 0, 0, 0, 1);
+    EXPECT_EQ(addr.ToString(), "2001:db8::1");
+
+    AddrV6 addr2(0, 0, 0, 0, 0, 0, 0, 1);
+    EXPECT_EQ(addr2.ToString(), "::1");
+
+    AddrV6 addr3(0xfe80, 0, 0, 0, 0x0202, 0xb3ff, 0xfe1e, 0x8329);
+    EXPECT_EQ(addr3.ToString(), "fe80::202:b3ff:fe1e:8329");
+}
+
+TEST(AddrV6, FromStrValid)
+{
+    auto res = AddrV6::FromStr("2001:db8::1");
+    ASSERT_TRUE(res.Ok()) << "failed to parse: " << res.Error();
+    EXPECT_EQ(res->ToString(), "2001:db8::1");
+
+    auto res2 = AddrV6::FromStr("::ffff:192.0.2.128");
+    ASSERT_TRUE(res2.Ok()) << "failed to parse: " << res2.Error();
+    EXPECT_TRUE(res2->IPv4Mapped());
+    EXPECT_EQ(res2->ToString(), "::ffff:192.0.2.128");
+}
+
+TEST(AddrV6, FromStrInvalid)
+{
+    auto res = AddrV6::FromStr("2001:db8:::1");
+    ASSERT_TRUE(res.Err());
+
+    auto res2 = AddrV6::FromStr("12345::1");
+    ASSERT_TRUE(res2.Err());
+
+    auto res3 = AddrV6::FromStr("1:2:3:4:5:6:7"); // only 7 hextets
+    ASSERT_TRUE(res3.Err());
+}
+
+// TEST(AddrV6, UnicastVariants) {
+//     AddrV6 linkLocal(0xfe80,0,0,0,0,0,0,1);
+//     EXPECT_TRUE(linkLocal.Unicast());
+//     EXPECT_TRUE(linkLocal.UnicastLinkLocal());
+//     EXPECT_FALSE(linkLocal.UnicastGlobal());
+
+//     AddrV6 uniqueLocal(0xfc00,0,0,0,0,0,0,1);
+//     EXPECT_TRUE(uniqueLocal.IsUnicast());
+//     EXPECT_TRUE(uniqueLocal.IsUniqueLocal());
+//     EXPECT_FALSE(uniqueLocal.IsUnicastGlobal());
+
+//     AddrV6 global(0x2001,0xdb8,1,0,0,0,0,1);
+//     EXPECT_TRUE(global.IsUnicastGlobal());
+//     EXPECT_FALSE(global.IsLinkLocal());
+//     EXPECT_FALSE(global.IsUniqueLocal());
+// }
+
+TEST(AddrV6, BenchmarkingAndDocumentation)
+{
+    AddrV6 bench(0x2001, 0x0002, 0, 0, 0, 0, 0, 1);
+    ASSERT_TRUE(bench.Benchmarking());
+
+    AddrV6 doc(0x2001, 0x0db8, 0, 0, 0, 0, 0, 1);
+    ASSERT_TRUE(doc.Documentation());
+}
+
+TEST(AddrV6, UInt128Conversion)
+{
+    AddrV6 a1(0x2001, 0xdb8, 0, 0, 0, 0, 0, 1);
+    absl::uint128 value = a1.AsUInt128();
+
+    AddrV6 b1(value);
+    EXPECT_EQ(a1.ToString(), b1.ToString());
+}
