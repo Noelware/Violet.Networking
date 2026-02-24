@@ -24,11 +24,117 @@
 #include <violet/Networking/IP/AddrV6.h>
 #include <violet/Violet.h>
 
+#include <variant>
+
 namespace violet::net::socket {
+
+struct ParseV6Error;
 
 struct AddrV6 final {
     ip::AddrV6 Address;
-    UInt16 Port;
+    UInt16 Port = 0;
+
+    constexpr VIOLET_IMPLICIT AddrV6() noexcept = default;
+    constexpr VIOLET_IMPLICIT AddrV6(ip::AddrV6 address, UInt16 port) noexcept
+        : Address(address)
+        , Port(port)
+    {
+    }
+
+    constexpr void SetAddress(ip::AddrV6 address) noexcept
+    {
+        this->Address = address;
+    }
+
+    constexpr void SetPort(UInt16 port) noexcept
+    {
+        this->Port = port;
+    }
+
+    static auto FromStr(Str input) noexcept -> Result<AddrV6, ParseV6Error>;
+
+    [[nodiscard]] auto ToString() const noexcept -> String;
+    friend auto operator<<(std::ostream& os, const AddrV6& self) noexcept -> std::ostream&
+    {
+        return os << self.ToString();
+    }
+
+    constexpr friend auto operator==(const AddrV6& lhs, const AddrV6& rhs) noexcept -> bool
+    {
+        return lhs.Address == rhs.Address && lhs.Port == rhs.Port;
+    }
+
+    constexpr friend auto operator!=(const AddrV6& lhs, const AddrV6& rhs) noexcept -> bool
+    {
+        return !(lhs == rhs);
+    }
+
+    constexpr friend auto operator<=>(const AddrV6& lhs, const AddrV6& rhs) noexcept -> std::strong_ordering
+    {
+        if (auto cmp = lhs.Address <=> rhs.Address; cmp != 0) {
+            return cmp;
+        }
+
+        return lhs.Port <=> rhs.Port;
+    }
+};
+
+struct ParseV6Error final {
+    auto ToString() const noexcept -> String;
+    friend auto operator<<(std::ostream& os, const ParseV6Error& self) noexcept -> std::ostream&
+    {
+        return os << self.ToString();
+    }
+
+private:
+    friend auto AddrV6::FromStr(Str) noexcept -> Result<AddrV6, ParseV6Error>;
+    constexpr VIOLET_IMPLICIT ParseV6Error() noexcept = default;
+
+    struct invalid_integral_t final {
+        std::errc Code;
+
+        [[nodiscard]] auto ToString() const noexcept -> String
+        {
+            std::error_code code(static_cast<Int32>(this->Code), std::generic_category());
+            return code.message();
+        }
+    };
+
+    struct invalid_bracket_placement_t final {
+        [[nodiscard]] auto ToString() const noexcept -> CStr
+        {
+            return "invalid bracket placement";
+        }
+    };
+
+    constexpr static auto invalidIntegral(std::errc code) noexcept -> ParseV6Error
+    {
+        ParseV6Error error;
+        error.n_value = invalid_integral_t{ .Code = code };
+
+        return error;
+    }
+
+    constexpr static auto invalidAddress(ip::InvalidV6AddressError&& error) noexcept -> ParseV6Error
+    {
+        ParseV6Error err;
+        err.n_value = VIOLET_MOVE(error);
+
+        return err;
+    }
+
+    constexpr static auto invalidBracketPlacement() -> ParseV6Error
+    {
+        ParseV6Error err;
+        err.n_value = invalid_bracket_placement_t{};
+
+        return err;
+    }
+
+    std::variant<invalid_integral_t, invalid_bracket_placement_t, ip::InvalidV6AddressError> n_value;
 };
 
 } // namespace violet::net::socket
+
+VIOLET_FORMATTER(violet::net::socket::AddrV6);
+VIOLET_FORMATTER(violet::net::socket::ParseV6Error);

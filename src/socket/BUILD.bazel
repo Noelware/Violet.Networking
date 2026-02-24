@@ -22,44 +22,28 @@
 load("//bazel:cc.bzl", "cc_library")
 
 cc_library(
-    name = "url_c",
-    hdrs = ["//include/violet-c/net:url.h"],
-    visibility = ["//visibility:public"],
-    deps = ["//rust/url"],
-)
-
-cc_library(
-    name = "url",
-    srcs = ["Url.cc"],
-    hdrs = ["//include/violet/Networking:URL.h"],
+    name = "addr_v4",
+    srcs = ["AddrV4.cc"],
+    hdrs = ["//include/violet/Networking/Socket:AddrV4.h"],
     visibility = ["//visibility:public"],
     deps = [
-        ":url_c",
+        "//src/ip:addr_v4",
         "@violet//violet",
+        "@violet//violet:strings",
         "@violet//violet/container",
     ],
 )
 
 cc_library(
-    name = "ip_address",
-    srcs = ["IPAddress.cc"],
-    hdrs = ["//include/violet/Networking:IPAddress.h"],
+    name = "addr_v6",
+    srcs = ["AddrV6.cc"],
+    hdrs = ["//include/violet/Networking/Socket:AddrV6.h"],
     visibility = ["//visibility:public"],
     deps = [
-        "//src/ip:addr_v4",
         "//src/ip:addr_v6",
+        "@absl//absl/numeric:int128",
         "@violet//violet",
-    ],
-)
-
-cc_library(
-    name = "socket_address",
-    srcs = ["SocketAddress.cc"],
-    hdrs = ["//include/violet/Networking:SocketAddress.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//src/socket:addr_v4",
-        "//src/socket:addr_v6",
-        "@violet//violet",
+        "@violet//violet:strings",
+        "@violet//violet/container",
     ],
 )

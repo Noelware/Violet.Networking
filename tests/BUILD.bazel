@@ -26,3 +26,15 @@ cc_test(
     srcs = ["Url.test.cc"],
     deps = ["//src:url"],
 )
+
+cc_test(
+    name = "ip_address",
+    srcs = ["IPAddress.test.cc"],
+    deps = ["//src:ip_address"],
+)
+
+cc_test(
+    name = "socket_address",
+    srcs = ["SocketAddress.test.cc"],
+    deps = ["//src:socket_address"],
+)

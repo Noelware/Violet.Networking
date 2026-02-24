@@ -195,6 +195,89 @@ struct VIOLET_API AddrV4 final {
         return this->Octets();
     }
 
+    constexpr VIOLET_EXPLICIT operator UInt32() const noexcept
+    {
+        return this->AsUInt32();
+    }
+
+    constexpr friend auto operator==(const AddrV4& lhs, const AddrV4& rhs) noexcept -> bool
+    {
+        return lhs.AsUInt32() == rhs.AsUInt32();
+    }
+
+    constexpr friend auto operator!=(const AddrV4& lhs, const AddrV4& rhs) noexcept -> bool
+    {
+        return !(lhs == rhs);
+    }
+
+    constexpr friend auto operator<=>(const AddrV4& lhs, const AddrV4& rhs) noexcept -> std::strong_ordering
+    {
+        return lhs.AsUInt32() <=> rhs.AsUInt32();
+    }
+
+    constexpr friend auto operator==(const AddrV4& lhs, UInt32 rhs) noexcept -> bool
+    {
+        return lhs.AsUInt32() == rhs;
+    }
+
+    constexpr friend auto operator!=(const AddrV4& lhs, UInt32 rhs) noexcept -> bool
+    {
+        return !(lhs == rhs);
+    }
+
+    constexpr friend auto operator==(UInt32 lhs, const AddrV4& rhs) noexcept -> bool
+    {
+        return lhs == rhs.AsUInt32();
+    }
+
+    constexpr friend auto operator!=(UInt32 lhs, const AddrV4& rhs) noexcept -> bool
+    {
+        return !(lhs == rhs);
+    }
+
+    constexpr friend auto operator<=>(const AddrV4& lhs, UInt32 rhs) noexcept -> std::strong_ordering
+    {
+        return lhs.AsUInt32() <=> rhs;
+    }
+
+    constexpr friend auto operator&(const AddrV4& lhs, const AddrV4& rhs) noexcept -> AddrV4
+    {
+        return AddrV4::FromUInt32(lhs.AsUInt32() & rhs.AsUInt32());
+    }
+
+    constexpr friend auto operator|(const AddrV4& lhs, const AddrV4& rhs) noexcept -> AddrV4
+    {
+        return AddrV4::FromUInt32(lhs.AsUInt32() | rhs.AsUInt32());
+    }
+
+    constexpr friend auto operator^(const AddrV4& lhs, const AddrV4& rhs) noexcept -> AddrV4
+    {
+        return AddrV4::FromUInt32(lhs.AsUInt32() ^ rhs.AsUInt32());
+    }
+
+    constexpr friend auto operator~(const AddrV4& ip) noexcept -> AddrV4
+    {
+        return AddrV4::FromUInt32(~ip.AsUInt32());
+    }
+
+    constexpr friend auto operator&=(AddrV4& lhs, const AddrV4& rhs) noexcept -> AddrV4&
+    {
+        lhs = AddrV4::FromUInt32(lhs.AsUInt32() & rhs.AsUInt32());
+        return lhs;
+    }
+
+    constexpr friend auto operator|=(AddrV4& lhs, const AddrV4& rhs) noexcept -> AddrV4&
+    {
+        lhs = AddrV4::FromUInt32(lhs.AsUInt32() | rhs.AsUInt32());
+        return lhs;
+    }
+
+    constexpr friend auto operator^=(AddrV4& lhs, const AddrV4& rhs) noexcept -> AddrV4&
+    {
+        lhs = AddrV4::FromUInt32(lhs.AsUInt32() ^ rhs.AsUInt32());
+        return lhs;
+    }
+
 private:
     Array<UInt8, 4> n_bytes;
 };

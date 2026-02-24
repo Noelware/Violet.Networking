@@ -184,6 +184,59 @@ struct VIOLET_API AddrV6 final {
         return this->AsUInt128();
     }
 
+    constexpr friend auto operator==(const AddrV6& lhs, const AddrV6& rhs) noexcept -> bool
+    {
+        return lhs.AsUInt128() == rhs.AsUInt128();
+    }
+
+    constexpr friend auto operator!=(const AddrV6& lhs, const AddrV6& rhs) noexcept -> bool
+    {
+        return !(lhs == rhs);
+    }
+
+    constexpr friend auto operator<=>(const AddrV6& lhs, const AddrV6& rhs) noexcept -> std::strong_ordering
+    {
+        return lhs.AsUInt128() <=> rhs.AsUInt128();
+    }
+
+    constexpr friend auto operator&(const AddrV6& lhs, const AddrV6& rhs) noexcept -> AddrV6
+    {
+        return lhs.AsUInt128() & rhs.AsUInt128();
+    }
+
+    constexpr friend auto operator|(const AddrV6& lhs, const AddrV6& rhs) noexcept -> AddrV6
+    {
+        return lhs.AsUInt128() | rhs.AsUInt128();
+    }
+
+    constexpr friend auto operator^(const AddrV6& lhs, const AddrV6& rhs) noexcept -> AddrV6
+    {
+        return lhs.AsUInt128() ^ rhs.AsUInt128();
+    }
+
+    constexpr friend auto operator~(const AddrV6& ip) noexcept -> AddrV6
+    {
+        return ~ip.AsUInt128();
+    }
+
+    constexpr friend auto operator&=(AddrV6& lhs, const AddrV6& rhs) noexcept -> AddrV6&
+    {
+        lhs = lhs.AsUInt128() & rhs.AsUInt128();
+        return lhs;
+    }
+
+    constexpr friend auto operator|=(AddrV6& lhs, const AddrV6& rhs) noexcept -> AddrV6&
+    {
+        lhs = lhs.AsUInt128() | rhs.AsUInt128();
+        return lhs;
+    }
+
+    constexpr friend auto operator^=(AddrV6& lhs, const AddrV6& rhs) noexcept -> AddrV6&
+    {
+        lhs = lhs.AsUInt128() ^ rhs.AsUInt128();
+        return lhs;
+    }
+
 private:
     Array<UInt8, 16> n_bytes{};
 };

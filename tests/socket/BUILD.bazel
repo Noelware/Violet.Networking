@@ -19,47 +19,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-load("//bazel:cc.bzl", "cc_library")
+load("//bazel:cc.bzl", "cc_test")
 
-cc_library(
-    name = "url_c",
-    hdrs = ["//include/violet-c/net:url.h"],
-    visibility = ["//visibility:public"],
-    deps = ["//rust/url"],
+cc_test(
+    name = "addr_v4",
+    srcs = ["AddrV4.test.cc"],
+    deps = ["//src/socket:addr_v4"],
 )
 
-cc_library(
-    name = "url",
-    srcs = ["Url.cc"],
-    hdrs = ["//include/violet/Networking:URL.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":url_c",
-        "@violet//violet",
-        "@violet//violet/container",
-    ],
-)
-
-cc_library(
-    name = "ip_address",
-    srcs = ["IPAddress.cc"],
-    hdrs = ["//include/violet/Networking:IPAddress.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//src/ip:addr_v4",
-        "//src/ip:addr_v6",
-        "@violet//violet",
-    ],
-)
-
-cc_library(
-    name = "socket_address",
-    srcs = ["SocketAddress.cc"],
-    hdrs = ["//include/violet/Networking:SocketAddress.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//src/socket:addr_v4",
-        "//src/socket:addr_v6",
-        "@violet//violet",
-    ],
+cc_test(
+    name = "addr_v6",
+    srcs = ["AddrV6.test.cc"],
+    deps = ["//src/socket:addr_v6"],
 )
