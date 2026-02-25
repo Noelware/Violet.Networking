@@ -262,7 +262,7 @@ private:
         kMax = std::numeric_limits<std::underlying_type_t<kind_t>>::max()
     };
 
-    constexpr static auto invalidNumberOfParts() noexcept -> InvalidV6AddressError
+    static auto invalidNumberOfParts() noexcept -> InvalidV6AddressError
     {
         InvalidV6AddressError error;
         error.n_kind = kind_t::kInvalidNumberOfParts;
@@ -270,7 +270,7 @@ private:
         return error;
     }
 
-    constexpr static auto invalidIntegral(std::errc code) noexcept -> InvalidV6AddressError
+    static auto invalidIntegral(std::errc code) noexcept -> InvalidV6AddressError
     {
         InvalidV6AddressError error;
         error.n_kind = kind_t::kFailedIntegralParsing;
@@ -279,7 +279,7 @@ private:
         return error;
     }
 
-    constexpr static auto partTooLarge() noexcept -> InvalidV6AddressError
+    static auto partTooLarge() noexcept -> InvalidV6AddressError
     {
         InvalidV6AddressError error;
         error.n_kind = kind_t::kPartTooLarge;

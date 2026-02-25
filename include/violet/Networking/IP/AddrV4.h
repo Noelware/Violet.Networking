@@ -307,7 +307,7 @@ private:
         kMax = std::numeric_limits<std::underlying_type_t<kind_t>>::max()
     };
 
-    constexpr static auto exceededOctetLimit() noexcept -> InvalidV4AddressError
+    static auto exceededOctetLimit() noexcept -> InvalidV4AddressError
     {
         InvalidV4AddressError error;
         error.n_kind = kind_t::kExceededOctetLimit;
@@ -315,7 +315,7 @@ private:
         return error;
     }
 
-    constexpr static auto failedIntegralParsing(std::errc code) noexcept -> InvalidV4AddressError
+    static auto failedIntegralParsing(std::errc code) noexcept -> InvalidV4AddressError
     {
         InvalidV4AddressError error;
         error.n_kind = kind_t::kFailedIntegralParsing;
@@ -324,7 +324,7 @@ private:
         return error;
     }
 
-    constexpr static auto maxOctetNumber() noexcept -> InvalidV4AddressError
+    static auto maxOctetNumber() noexcept -> InvalidV4AddressError
     {
         InvalidV4AddressError error;
         error.n_kind = kind_t::kMaxOctetNumber;
@@ -332,7 +332,7 @@ private:
         return error;
     }
 
-    constexpr static auto notAtleast4Octets() noexcept -> InvalidV4AddressError
+    static auto notAtleast4Octets() noexcept -> InvalidV4AddressError
     {
         InvalidV4AddressError error;
         error.n_kind = kind_t::kNotAtleast4Octets;
