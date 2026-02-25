@@ -141,3 +141,135 @@ TEST(AddrV6, UInt128Conversion)
     AddrV6 b1(value);
     EXPECT_EQ(a1.ToString(), b1.ToString());
 }
+
+namespace {
+
+struct AddrV6RFC: public testing::Test {
+    static void ExpectSuccess(Str input, Array<UInt16, 8> expected) noexcept
+    {
+        auto result = AddrV6::FromStr(input);
+        ASSERT_TRUE(result) << "failed to parse input `" << input << "': " << result.Error();
+
+        auto ipv6 = result.Unwrap();
+        auto hextets = ipv6.Hextets();
+
+        Array<UInt16, 8> actual;
+        for (size_t i = 0; i < 8; ++i) {
+            actual[i] = (hextets[i * 2] << 8) | hextets[(i * 2) + 1];
+        }
+
+        for (UInt i = 0; i < 8; ++i) {
+            EXPECT_EQ(actual[i], expected[i]) << "Mismatch at index " << i << ": got "
+                                              << static_cast<unsigned>(hextets[i]) << ", expected " << expected[i];
+        }
+    }
+
+    static void ExpectFailure(Str input) noexcept
+    {
+        auto result = AddrV6::FromStr(input);
+        ASSERT_FALSE(result) << "input `" << input << "' succeeded";
+    }
+};
+
+} // namespace
+
+TEST_F(AddrV6RFC, FullEightHextets)
+{
+    ExpectSuccess(
+        "2001:0db8:0000:0000:0000:ff00:0042:8329", { 0x2001, 0x0db8, 0x0000, 0x0000, 0x0000, 0xff00, 0x0042, 0x8329 });
+}
+
+TEST_F(AddrV6RFC, ZeroCompressionMiddle)
+{
+    ExpectSuccess("2001:db8::ff00:42:8329", { 0x2001, 0x0db8, 0x0000, 0x0000, 0x0000, 0xff00, 0x0042, 0x8329 });
+}
+
+TEST_F(AddrV6RFC, Loopback)
+{
+    ExpectSuccess("::1", { 0, 0, 0, 0, 0, 0, 0, 1 });
+}
+
+TEST_F(AddrV6RFC, Unspecified)
+{
+    ExpectSuccess("::", { 0, 0, 0, 0, 0, 0, 0, 0 });
+}
+
+TEST_F(AddrV6RFC, LeadingCompression)
+{
+    ExpectSuccess("::ffff:192.168.0.1", { 0, 0, 0, 0, 0, 0xffff, 0xc0a8, 0x0001 });
+}
+
+TEST_F(AddrV6RFC, IPv4Mapped)
+{
+    ExpectSuccess("0:0:0:0:0:ffff:192.168.0.1", { 0, 0, 0, 0, 0, 0xffff, 0xc0a8, 0x0001 });
+}
+
+TEST_F(AddrV6RFC, UpperLowerHex)
+{
+    ExpectSuccess("2001:DB8:0:0:8:800:200C:417A", { 0x2001, 0x0db8, 0, 0, 0x0008, 0x0800, 0x200c, 0x417a });
+}
+
+TEST_F(AddrV6RFC, MultipleDoubleColon)
+{
+    ExpectFailure("2001::db8::1");
+}
+
+TEST_F(AddrV6RFC, TooManyParts)
+{
+    ExpectFailure("1:2:3:4:5:6:7:8:9");
+}
+
+TEST_F(AddrV6RFC, TooFewPartsWithoutCompression)
+{
+    ExpectFailure("1:2:3:4:5:6:7");
+}
+
+TEST_F(AddrV6RFC, HextetTooLong)
+{
+    ExpectFailure("12345::1");
+}
+
+TEST_F(AddrV6RFC, InvalidHex)
+{
+    ExpectFailure("2001:db8::zzzz");
+}
+
+TEST_F(AddrV6RFC, IPv4OutOfRange)
+{
+    ExpectFailure("::ffff:256.1.1.1");
+}
+
+TEST_F(AddrV6RFC, IPv4TooFewOctets)
+{
+    ExpectFailure("::ffff:192.168.1");
+}
+
+TEST_F(AddrV6RFC, IPv4TooManyOctets)
+{
+    ExpectFailure("::ffff:1.2.3.4.5");
+}
+
+TEST_F(AddrV6RFC, IPv4NotLast)
+{
+    ExpectFailure("::ffff:192.168.0.1:1234");
+}
+
+TEST_F(AddrV6RFC, LoneColonPrefix)
+{
+    ExpectFailure(":1:2:3:4:5:6:7");
+}
+
+TEST_F(AddrV6RFC, LoneColonSuffix)
+{
+    ExpectFailure("1:2:3:4:5:6:7:");
+}
+
+TEST_F(AddrV6RFC, EmptyString)
+{
+    ExpectFailure("");
+}
+
+TEST_F(AddrV6RFC, OnlySingleColon)
+{
+    ExpectFailure(":");
+}

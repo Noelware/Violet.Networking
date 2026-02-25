@@ -31,6 +31,7 @@ using violet::Err;
 using violet::Result;
 using violet::Str;
 using violet::UInt;
+using violet::UInt16;
 using violet::net::ip::AddrV6;
 
 auto InvalidV6AddressError::ToString() const noexcept -> String
@@ -49,6 +50,10 @@ auto InvalidV6AddressError::ToString() const noexcept -> String
         suffix = "part too large (>65535)";
         break;
 
+    case kind_t::kMultipleColon:
+        suffix = "multiple `::` was found";
+        break;
+
     default:
         VIOLET_UNREACHABLE();
     }
@@ -58,13 +63,30 @@ auto InvalidV6AddressError::ToString() const noexcept -> String
 
 auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError>
 {
+    if (input.empty()) {
+        return Err(InvalidV6AddressError::invalidNumberOfParts());
+    }
+
     Array<UInt16, 8> hextets{};
+    Vec<UInt16> headHextets;
+    Vec<UInt16> tailHextets;
+    bool seenIPv4 = false;
+
+    // Single '::' position
     UInt doubleColonPos = input.find("::");
+    if (doubleColonPos != Str::npos && input.find("::", doubleColonPos + 2) != Str::npos) {
+        return Err(InvalidV6AddressError::multipleDoubleColon());
+    }
 
     auto parseHextet = [](Str part) -> Result<UInt16, InvalidV6AddressError> {
+        if (part.empty() || part.size() > 4) {
+            return Err(InvalidV6AddressError::invalidIntegral(std::errc::invalid_argument));
+        }
+
         UInt32 value = 0;
         auto [ptr, ec] = std::from_chars(part.data(), part.data() + part.size(), value, 16);
-        if (ec != std::errc{}) {
+
+        if (ec != std::errc{} || ptr != part.data() + part.size()) {
             return Err(InvalidV6AddressError::invalidIntegral(ec));
         }
 
@@ -75,101 +97,119 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
         return static_cast<UInt16>(value);
     };
 
-    Vec<UInt16> headHextets;
-    Vec<UInt16> tailHextets;
+    auto parseIPv4 = [&](Str part) -> Result<violet::Pair<UInt16, UInt16>, InvalidV6AddressError> {
+        if (seenIPv4) {
+            return Err(InvalidV6AddressError::invalidNumberOfParts());
+        }
+
+        seenIPv4 = true;
+
+        UInt32 octets[4]{};
+        size_t start = 0;
+        for (UInt i = 0; i < 4; ++i) {
+            if (start >= part.size()) {
+                return Err(InvalidV6AddressError::invalidIntegral(std::errc::invalid_argument));
+            }
+
+            size_t end = part.find('.', start);
+            if (end == Str::npos) {
+                end = part.size();
+            }
+
+            UInt32 value = 0;
+            auto [ptr, ec] = std::from_chars(part.data() + start, part.data() + end, value, 10);
+            if (ec != std::errc{} || value > 255 || ptr != part.data() + end) {
+                return Err(InvalidV6AddressError::invalidIntegral(ec));
+            }
+
+            octets[i] = value;
+            start = end + 1;
+        }
+
+        if (start - 1 != part.size()) {
+            return Err(InvalidV6AddressError::invalidNumberOfParts());
+        }
+
+        return std::make_pair(
+            static_cast<UInt16>((octets[0] << 8) | octets[1]), static_cast<UInt16>((octets[2] << 8) | octets[3]));
+    };
+
+    auto parseRange = [&](Str range, Vec<UInt16>& target) -> Result<void, InvalidV6AddressError> {
+        size_t start = 0;
+        while (start <= range.size()) {
+            size_t end = range.find(':', start);
+            if (end == Str::npos) {
+                end = range.size();
+            }
+
+            Str part = range.substr(start, end - start);
+            if (part.empty()) {
+                return Err(InvalidV6AddressError::invalidNumberOfParts());
+            }
+
+            if (part.find('.') != Str::npos) {
+                if (end != range.size()) {
+                    return Err(InvalidV6AddressError::invalidNumberOfParts());
+                }
+
+                auto pair = VIOLET_TRY(parseIPv4(part));
+                target.push_back(pair.first);
+                target.push_back(pair.second);
+                return {};
+            }
+
+            UInt16 value = VIOLET_TRY(parseHextet(part));
+            target.push_back(value);
+            if (end == range.size()) {
+                break;
+            }
+
+            start = end + 1;
+        }
+        return {};
+    };
 
     if (doubleColonPos != Str::npos) {
         Str head = input.substr(0, doubleColonPos);
         Str tail = input.substr(doubleColonPos + 2);
 
-        // Parse head `::`
         if (!head.empty()) {
-            std::stringstream ss(head);
-            String part;
-
-            while (std::getline(ss, part, ':')) {
-                headHextets.push_back(VIOLET_TRY(parseHextet(part)));
-            }
+            VIOLET_TRY_VOID(parseRange(head, headHextets));
         }
 
-        // Parse tail `::`
         if (!tail.empty()) {
-            std::stringstream ss(tail);
-            String part;
-
-            while (std::getline(ss, part, ':')) {
-                // Check if `part` contains a IPv4-mapped address
-                // as the last segment
-                if (part.find('.') != Str::npos) {
-                    // TODO(@auguwu/Noel): switch to violet::strings::SplitN<4>(part, '.');
-                    // once Noelware.Violet 26.03.08 is released
-                    UInt32 first = 0, second = 0, third = 0, fourth = 0; // NOLINT(readability-isolate-declaration)
-                    if (std::sscanf(part.c_str(), "%u.%u.%u.%u", &first, &second, &third, &fourth) != 4) {
-                        return Err(InvalidV6AddressError::invalidIntegral(std::errc::invalid_argument));
-                    }
-
-                    if (first > 255 || second > 255 || third > 255 || fourth > 255) {
-                        return Err(InvalidV6AddressError::partTooLarge());
-                    }
-
-                    tailHextets.push_back(static_cast<UInt16>((first << 8) | second));
-                    tailHextets.push_back(static_cast<UInt16>((third << 8) | fourth));
-                } else {
-                    tailHextets.push_back(VIOLET_TRY(parseHextet(part)));
-                }
-            }
+            VIOLET_TRY_VOID(parseRange(tail, tailHextets));
         }
 
         if (headHextets.size() + tailHextets.size() > 8) {
             return Err(InvalidV6AddressError::invalidNumberOfParts());
         }
 
-        UInt index = 0;
-        for (auto head: headHextets) {
-            hextets[index++] = head;
+        // Copy head
+        for (size_t i = 0; i < headHextets.size(); ++i) {
+            hextets[i] = headHextets[i];
         }
 
-        UInt zerosToFill = 8 - (headHextets.size() + tailHextets.size());
-        for (UInt i = 0; i < zerosToFill; ++i) {
-            hextets[index++] = 0;
+        // Fill zeros
+        size_t zeros = 8 - (headHextets.size() + tailHextets.size());
+        for (size_t i = 0; i < zeros; ++i) {
+            hextets[headHextets.size() + i] = 0;
         }
 
-        for (auto tail: tailHextets) {
-            hextets[index++] = tail;
+        // Copy tail at the end
+        for (size_t i = 0; i < tailHextets.size(); ++i) {
+            hextets[headHextets.size() + zeros + i] = tailHextets[i];
         }
     } else {
-        std::stringstream ss(input);
-        String part;
-        UInt index = 0;
+        Vec<UInt16> all;
+        VIOLET_TRY_VOID(parseRange(input, all));
 
-        while (std::getline(ss, part, ':')) {
-            // Check if `part` contains a IPv4-mapped address
-            // as the last segment
-            if (part.find('.') != Str::npos) {
-                // TODO(@auguwu/Noel): switch to violet::strings::SplitN<4>(part, '.');
-                // once Noelware.Violet 26.03.08 is released
-                UInt32 first = 0, second = 0, third = 0, fourth = 0; // NOLINT(readability-isolate-declaration)
-                if (std::sscanf(part.c_str(), "%u.%u.%u.%u", &first, &second, &third, &fourth) != 4) {
-                    return Err(InvalidV6AddressError::invalidIntegral(std::errc::invalid_argument));
-                }
-
-                if (first > 255 || second > 255 || third > 255 || fourth > 255) {
-                    return Err(InvalidV6AddressError::partTooLarge());
-                }
-
-                hextets[index++] = static_cast<UInt16>((first << 8) | second);
-                hextets[index++] = static_cast<UInt16>((third << 8) | fourth);
-            } else {
-                if (index >= 8) {
-                    return Err(InvalidV6AddressError::invalidNumberOfParts());
-                }
-
-                hextets[index++] = VIOLET_TRY(parseHextet(part));
-            }
+        if (all.size() != 8) {
+            return Err(InvalidV6AddressError::invalidNumberOfParts());
         }
 
-        if (index != 8) {
-            return Err(InvalidV6AddressError::invalidNumberOfParts());
+        for (size_t i = 0; i < 8; ++i) {
+            hextets[i] = all[i];
         }
     }
 

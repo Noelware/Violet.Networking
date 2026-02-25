@@ -154,7 +154,7 @@ struct VIOLET_API AddrV6 final {
     [[nodiscard]] constexpr auto AsUInt128() const noexcept -> absl::uint128
     {
         absl::uint128 result = 0;
-        auto octets = this->Octets();
+        auto octets = this->Hextets();
 
         for (Int32 i = 0; i < 16; ++i) {
             result |= absl::uint128(octets[i]) << ((15 - i) * 8);
@@ -163,7 +163,7 @@ struct VIOLET_API AddrV6 final {
         return result;
     }
 
-    [[nodiscard]] constexpr auto Octets() const noexcept -> Array<UInt8, 16>
+    [[nodiscard]] constexpr auto Hextets() const noexcept -> Array<UInt8, 16>
     {
         return this->n_bytes;
     }
@@ -176,7 +176,7 @@ struct VIOLET_API AddrV6 final {
 
     constexpr VIOLET_EXPLICIT operator Array<UInt8, 16>() const noexcept
     {
-        return this->Octets();
+        return this->Hextets();
     }
 
     constexpr VIOLET_EXPLICIT operator absl::uint128() const noexcept
@@ -258,6 +258,7 @@ private:
         kInvalidNumberOfParts = 0,
         kFailedIntegralParsing = 1,
         kPartTooLarge = 2,
+        kMultipleColon = 3,
 
         kMax = std::numeric_limits<std::underlying_type_t<kind_t>>::max()
     };
@@ -283,6 +284,14 @@ private:
     {
         InvalidV6AddressError error;
         error.n_kind = kind_t::kPartTooLarge;
+
+        return error;
+    }
+
+    static auto multipleDoubleColon() noexcept -> InvalidV6AddressError
+    {
+        InvalidV6AddressError error;
+        error.n_kind = kind_t::kMultipleColon;
 
         return error;
     }
