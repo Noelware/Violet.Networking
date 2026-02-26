@@ -32,22 +32,32 @@ using namespace violet::net;
 
 namespace {
 
+#if VIOLET_REQUIRE_STL(202302L)
+using std::println;
+#else
+template<typename... Args>
+void println(std::format_string<Args...> fmt, Args&&... args)
+{
+    std::cout << std::format(fmt, VIOLET_FWD(Args, args)...) << '\n';
+}
+#endif
+
 void printUrl(violet::net::Url& url) noexcept
 {
-    std::println("=+= URL: {} =+=", url.ToString());
-    std::println("|> Scheme:         {}", url.Scheme());
-    std::println("|> Special Scheme: {}", url.Special() ? "yes" : "no");
-    std::println("|> Has Authority:  {}", url.HasAuthority() ? "yes" : "no");
-    std::println("|> Authority:      {}", url.Authority());
-    std::println("|> Username:       {}", url.Username());
-    std::println("|> Password:       {}", url.Password());
-    std::println("|> Has Host:       {}", url.HasHost() ? "yes" : "no");
-    std::println("|> Domain:         {}", url.Domain());
-    std::println("|> Path:           {}", url.Path());
-    std::println("|> Query:          {}", url.Query());
-    std::println("|> Fragment:       {}", url.Fragment());
-    std::println("|> Port:           {}", url.Port());
-    std::println("|> Port or Known:  {}", url.PortOrKnownDefault());
+    println("=+= URL: {} =+=", url.ToString());
+    println("|> Scheme:         {}", url.Scheme());
+    println("|> Special Scheme: {}", url.Special() ? "yes" : "no");
+    println("|> Has Authority:  {}", url.HasAuthority() ? "yes" : "no");
+    println("|> Authority:      {}", url.Authority());
+    println("|> Username:       {}", url.Username());
+    println("|> Password:       {}", url.Password());
+    println("|> Has Host:       {}", url.HasHost() ? "yes" : "no");
+    println("|> Domain:         {}", url.Domain());
+    println("|> Path:           {}", url.Path());
+    println("|> Query:          {}", url.Query());
+    println("|> Fragment:       {}", url.Fragment());
+    println("|> Port:           {}", url.Port());
+    println("|> Port or Known:  {}", url.PortOrKnownDefault());
 }
 
 } // namespace

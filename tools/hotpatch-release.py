@@ -48,7 +48,7 @@ def main():
     if len(token) == 0 or len(tag) == 0:
         raise RuntimeError("$GITHUB_TOKEN or $GITHUB_REF_NAME not defined in environment")
 
-    release = _github_request(f"https://api.github.com/repos/Noelware/violet/releases/tags/{tag}")
+    release = _github_request(f"https://api.github.com/repos/Noelware/Violet.Networking/releases/tags/{tag}")
     body = release["body"]
 
     print("==== current release notes ====")
