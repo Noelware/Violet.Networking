@@ -140,7 +140,7 @@ jobs:
                 bazel-version: ["7.7.1", "8.5.1"]
         env:
             USE_BAZEL_VERSION: ${{matrix.bazel-version}}
-            BAZELFLAGS: "--config=ci --action_env=CC=$(brew --prefix llvm@20)/bin/clang --action_env=CXX=$(brew --prefix llvm@20) --cxxopt=-std=c++${{matrix.cxx-standard}} --host_cxxopt=-std=c++${{matrix.cxx-standard}}"
+            BAZELFLAGS: "--config=ci --action_env=CC=$(brew --prefix llvm@20)/bin/clang --action_env=CXX=$(brew --prefix llvm@20)/bin/clang++ --cxxopt=-std=c++${{matrix.cxx-standard}} --host_cxxopt=-std=c++${{matrix.cxx-standard}}"
         steps:
             - uses: actions/checkout@v6
             - uses: actions/cache@v5
@@ -151,6 +151,8 @@ jobs:
                     macos-homebrew-llvm-
 
             - run: brew install llvm@20
+            - name: Setup macOS SDK root
+              run: echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> $GITHUB_ENV
 
             - uses: actions/cache@v5
               with:
@@ -161,14 +163,22 @@ jobs:
                     ~/.cache/bazelisk
 
             - run: bazel build ${{env.BAZELFLAGS}} //...
+              env:
+                SDKROOT: ${{env.SDKROOT}}
 
             - name: "build: without C++ exceptions"
               run: bazel build ${{env.BAZELFLAGS}} --cxxopt=-fno-exceptions --host_cxxopt=-fno-exceptions //...
+              env:
+                SDKROOT: ${{env.SDKROOT}}
 
             - name: "build: without RTTI"
               run: bazel build ${{env.BAZELFLAGS}} --cxxopt=-fno-rtti --host_cxxopt=-fno-rtti //...
+              env:
+                SDKROOT: ${{env.SDKROOT}}
 
             - run: bazel test ${{env.BAZELFLAGS}} //...
+              env:
+                SDKROOT: ${{env.SDKROOT}}
     # cmake-linux:
     #     strategy:
     #         fail-fast: false

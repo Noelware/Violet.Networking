@@ -23,8 +23,6 @@
 
 #include <print>
 
-#define eprintln(...) ::std::println(std::cerr, ##__VA_ARGS__)
-
 // NOLINTBEGIN(google-build-using-namespace)
 using namespace violet;
 using namespace violet::net;
@@ -34,11 +32,18 @@ namespace {
 
 #if VIOLET_REQUIRE_STL(202302L)
 using std::println;
+#define eprintln(...) ::println(std::cerr, ##__VA_ARGS__)
 #else
 template<typename... Args>
 void println(std::format_string<Args...> fmt, Args&&... args)
 {
     std::cout << std::format(fmt, VIOLET_FWD(Args, args)...) << '\n';
+}
+
+template<typename... Args>
+void eprintln(std::format_string<Args...> fmt, Args&&... args)
+{
+    std::cerr << std::format(fmt, VIOLET_FWD(Args, args)...) << '\n';
 }
 #endif
 
