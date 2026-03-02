@@ -45,10 +45,10 @@ build:macos --cxxopt=-fno-modules
 build:macos --features=-layering_check --features=-parse_headers
 
 # C++: Disable annoying warnings
-build:linux --cxxopt=-Wno-unused-command-line-argument
-build:linux --host_cxxopt=-Wno-unused-command-line-argument
-build:macos --cxxopt=-Wno-unused-command-line-argument
-build:macos --host_cxxopt=-Wno-unused-command-line-argument
+build:linux --copt=-Wno-unused-command-line-argument
+build:linux --host_copt=-Wno-unused-command-line-argument
+build:macos --copt=-Wno-unused-command-line-argument
+build:macos --host_copt=-Wno-unused-command-line-argument
 
 # `--config=libcxx`: Enables compilation and linking with libc++
 build:libcxx --cxxopt=-stdlib=libc++
@@ -85,6 +85,10 @@ common:ci --verbose_failures
 
 ## Rust
 build --@rules_rust//rust/toolchain/channel=nightly
+
+# Use Bazel's C++ toolchain as the linker for Rust targets instead of relying
+# on a system linker being available in the sandbox (fixes macOS linker errors).
+build --@rules_rust//rust/settings:experimental_use_cc_common_link=True
 
 build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
 build --output_groups=+clippy_checks

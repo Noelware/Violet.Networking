@@ -28,7 +28,7 @@
   ### - linux
   valgrind,
   ### - darwin
-  apple-sdk_15,
+  apple-sdk_14,
   ## tools
   pkg-config,
   python3,
@@ -47,7 +47,7 @@
   ripgrep,
   taplo,
 }: let
-  darwinPackages = [apple-sdk_15];
+  darwinPackages = [apple-sdk_14];
   linuxPackages = [valgrind];
 
   # Alias for `llvmPackages_XX` that we aim to support. At the moment,
