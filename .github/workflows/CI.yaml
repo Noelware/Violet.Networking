@@ -140,7 +140,7 @@ jobs:
                 bazel-version: ["7.7.1", "8.5.1"]
         env:
             USE_BAZEL_VERSION: ${{matrix.bazel-version}}
-            BAZELFLAGS: "--config=ci --action_env=CC=$(brew --prefix llvm@20)/bin/clang --action_env=CXX=$(brew --prefix llvm@20)/bin/clang++ --cxxopt=-std=c++${{matrix.cxx-standard}} --host_cxxopt=-std=c++${{matrix.cxx-standard}} --linkopt=build --linkopt=-fuse-ld=lld --host_linkopt=build --linkopt=-fuse-ld=lld"
+            BAZELFLAGS: "--config=ci --action_env=CC=$(brew --prefix llvm@20)/bin/clang --action_env=CXX=$(brew --prefix llvm@20)/bin/clang++ --cxxopt=-std=c++${{matrix.cxx-standard}} --host_cxxopt=-std=c++${{matrix.cxx-standard}} --linkopt=-fuse-ld=lld --host_linkopt=-fuse-ld=lld"
         steps:
             - uses: actions/checkout@v6
             - uses: actions/cache@v5
