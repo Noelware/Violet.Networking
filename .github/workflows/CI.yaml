@@ -140,7 +140,7 @@ jobs:
                 bazel-version: ["7.7.1", "8.5.1"]
         env:
             USE_BAZEL_VERSION: ${{matrix.bazel-version}}
-            BAZELFLAGS: "--config=ci --cxxopt=-std=c++${{matrix.cxx-standard}} --host_cxxopt=-std=c++${{matrix.cxx-standard}}"
+            BAZELFLAGS: "--config=ci --config=cxx${{matrix.cxx-standard}}"
         steps:
             - uses: actions/checkout@v6
             - uses: actions/cache@v5
