@@ -140,20 +140,9 @@ jobs:
                 bazel-version: ["7.7.1", "8.5.1"]
         env:
             USE_BAZEL_VERSION: ${{matrix.bazel-version}}
-            BAZELFLAGS: "--config=ci --action_env=CC=$(brew --prefix llvm@20)/bin/clang --action_env=CXX=$(brew --prefix llvm@20)/bin/clang++ --cxxopt=-std=c++${{matrix.cxx-standard}} --host_cxxopt=-std=c++${{matrix.cxx-standard}} --linkopt=-fuse-ld=lld --host_linkopt=-fuse-ld=lld"
+            BAZELFLAGS: "--config=ci --action_env=CC=$(brew --prefix llvm@20)/bin/clang --action_env=CXX=$(brew --prefix llvm@20)/bin/clang++ --cxxopt=-std=c++${{matrix.cxx-standard}} --host_cxxopt=-std=c++${{matrix.cxx-standard}}"
         steps:
             - uses: actions/checkout@v6
-            - uses: actions/cache@v5
-              with:
-                path: /opt/homebrew/opt/llvm@20
-                key: macos-homebrew-llvm-20
-                restore-keys: |
-                    macos-homebrew-llvm-
-
-            - run: brew install llvm@20
-            - name: Setup macOS SDK root
-              run: echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> $GITHUB_ENV
-
             - uses: actions/cache@v5
               with:
                 key: bazel-cache-macos-${{hashFiles('MODULE.bazel', 'BUILD.bazel', '.bazelrc')}}
@@ -162,17 +151,24 @@ jobs:
                     ~/.cache/bazel
                     ~/.cache/bazelisk
 
-            - run: bazel build ${{env.BAZELFLAGS}} //...
+            - uses: maxim-lobanov/setup-xcode@v1
+              with:
+                xcode-version: latest-stable
+
+            - name: Setup macOS SDK root
+              run: echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> $GITHUB_ENV
+
+            - run: bazel build ${{env.BAZELFLAGS}} --action_env=SDKROOT //...
               env:
                 SDKROOT: ${{env.SDKROOT}}
 
             - name: "build: without C++ exceptions"
-              run: bazel build ${{env.BAZELFLAGS}} --cxxopt=-fno-exceptions --host_cxxopt=-fno-exceptions //...
+              run: bazel build ${{env.BAZELFLAGS}} --action_env=SDKROOT --cxxopt=-fno-exceptions --host_cxxopt=-fno-exceptions //...
               env:
                 SDKROOT: ${{env.SDKROOT}}
 
             - name: "build: without RTTI"
-              run: bazel build ${{env.BAZELFLAGS}} --cxxopt=-fno-rtti --host_cxxopt=-fno-rtti //...
+              run: bazel build ${{env.BAZELFLAGS}} --action_env=SDKROOT --cxxopt=-fno-rtti --host_cxxopt=-fno-rtti //...
               env:
                 SDKROOT: ${{env.SDKROOT}}
 
