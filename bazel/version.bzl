@@ -20,7 +20,7 @@
 # SOFTWARE.
 
 VERSION = "26.03"
-DEVBUILD = True
+DEVBUILD = False
 
 def encode_as_int():
     parts = VERSION.split(".")
