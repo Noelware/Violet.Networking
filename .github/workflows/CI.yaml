@@ -33,6 +33,7 @@ on:
             - '.vscode/**'
             - '.ci/**'
             - 'nix/**'
+            - 'tools/**'
 
             - renovate.json
             - CHANGELOG.md
