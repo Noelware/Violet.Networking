@@ -53,11 +53,11 @@ constexpr static const int PATCH = (VIOLET_NET_VERSION / 100) % 100;
 /// The build component; only available in dev builds.
 constexpr static const int BUILD = VIOLET_NET_VERSION % 100;
 
-#ifdef VIOLET_NET_DEVBUILD
+#if defined(VIOLET_NET_DEVBUILD) && VIOLET_NET_DEVBUILD
 /// Returns **true** if this is a development build.
 constexpr static const bool DEVBUILD = true;
 #else
-/// Returns **true** if this is a development build.
+/// Returns **false** if this is a development build.
 constexpr static const bool DEVBUILD = false;
 #endif
 
@@ -97,13 +97,13 @@ constexpr auto Version() noexcept -> std::string
         version.append(std::format(".{:02}", PATCH));
     }
 
-#ifdef VIOLET_NET_DEVBUILD
-    version.append("-dev");
+    if constexpr (DEVBUILD) {
+        version.append("-dev");
 
-    if constexpr (BUILD > 0) {
-        version.append(".{}", BUILD);
+        if constexpr (BUILD > 0) {
+            version.append(".{}", BUILD);
+        }
     }
-#endif
 
     return version;
 }

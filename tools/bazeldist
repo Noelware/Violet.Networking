@@ -50,15 +50,11 @@ files=(
 
 for dir in "${dirs[@]}"; do
     echo "[violet/tools:bazeldist] copying directory $dir ~> $SCRIPT_DIR/.bazeldist/$dir"
-    if [ "$dir" == "rust" ]; then
-        rsync -a --exclude 'target'  "$SCRIPT_DIR/$dir" "$SCRIPT_DIR/.bazeldist"
-    else
-        cp -r "$SCRIPT_DIR/$dir" "$SCRIPT_DIR/.bazeldist"
-    fi
+    cp -r "$SCRIPT_DIR/$dir" "$SCRIPT_DIR/.bazeldist"
 
     if [ "$dir" == "bazel" ]; then
         rm -rf "$SCRIPT_DIR/.bazeldist/bazel/deps"
-        sed -i "s/^VERSION = \".*\"/VERSION = \"$VERSION\"/" "$SCRIPT_DIR/.bazeldist/buildsystem/bazel/version.bzl"
+        sed -i "s/^VERSION = \".*\"/VERSION = \"$VERSION\"/" "$SCRIPT_DIR/.bazeldist/bazel/version.bzl"
     fi
 done
 
