@@ -66,7 +66,7 @@ jobs:
             fail-fast: false
             matrix:
                 compiler: [gcc-15, gcc-14, clang-21, clang-20]
-                bazel-version: ["7.7.1", "8.6.0", "9.0.1"]
+                bazel-version: ["7.7.1", "8.6.0"]
                 cxx-standard: ["26", "23", "20"]
                 include:
                     - {compiler: clang-21, cc: "clang-21", cxx: "clang++-21", flags: ""}
@@ -140,7 +140,7 @@ jobs:
             fail-fast: false
             matrix:
                 cxx-standard: [26, 23, 20]
-                bazel-version: ["7.7.1", "8.6.0", "9.0.1"]
+                bazel-version: ["7.7.1", "8.6.0"]
         env:
             USE_BAZEL_VERSION: ${{matrix.bazel-version}}
             BAZELFLAGS: "--config=ci --config=cxx${{matrix.cxx-standard}} --client_env=BAZEL_CXXOPTS=-std=c++${{matrix.cxx-standard}} --action_env=SDKROOT"
@@ -212,7 +212,7 @@ jobs:
                     - {compiler: clang-21, cc: "clang-21", cxx: "clang++-21", flags: " --test_env=ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer-21"}
                     - {compiler: gcc-15, cc: "gcc", cxx: "g++", flags: ""}
         env:
-            USE_BAZEL_VERSION: "9.0.1"
+            USE_BAZEL_VERSION: "8.6.0"
             BAZELFLAGS: "--config=ci --config=asan --cxxopt=-std=c++26 --host_cxxopt=-std=c++26 --client_env=BAZEL_CXXOPTS=-std=c++26 --action_env=CC=${{matrix.cc}} --action_env=CXX=${{matrix.cxx}} ${{matrix.flags}}"
         steps:
             - uses: actions/checkout@v6
@@ -239,7 +239,7 @@ jobs:
                     - {compiler: clang-21, cc: "clang-21", cxx: "clang++-21", flags: "--test_env=UBSAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer-21"}
                     - {compiler: gcc-15, cc: "gcc", cxx: "g++", flags: ""}
         env:
-            USE_BAZEL_VERSION: "9.0.1"
+            USE_BAZEL_VERSION: "8.6.0"
             BAZELFLAGS: "--config=ci --config=ubsan --cxxopt=-std=c++26 --host_cxxopt=-std=c++26 --client_env=BAZEL_CXXOPTS=-std=c++26 --action_env=CC=${{matrix.cc}} --action_env=CXX=${{matrix.cxx}} ${{matrix.flags}}"
         steps:
             - uses: actions/checkout@v6
@@ -266,7 +266,7 @@ jobs:
                     - {compiler: clang-21, cc: "clang-21", cxx: "clang++-21", flags: "--test_env=TSAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer-21 "}
                     - {compiler: gcc-15, cc: "gcc", cxx: "g++", flags: ""}
         env:
-            USE_BAZEL_VERSION: "9.0.1"
+            USE_BAZEL_VERSION: "8.6.0"
             BAZELFLAGS: "--config=ci --config=tsan --cxxopt=-std=c++26 --host_cxxopt=-std=c++26 --client_env=BAZEL_CXXOPTS=-std=c++26 --action_env=CC=${{matrix.cc}} --action_env=CXX=${{matrix.cxx}} ${{matrix.flags}}"
         steps:
             - uses: actions/checkout@v6
