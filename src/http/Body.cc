@@ -18,45 +18,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
-//! # 🌺💜 `violet/Networking/HTTP/cURL/Global.h`
 
-#pragma once
+#include <violet/Networking/HTTP/Body.h>
 
-#include <violet/Language/Macros.h>
+using violet::Optional;
+using violet::Str;
+using violet::Vec;
+using violet::net::http::Body;
 
-#include <cstdint>
+auto Body::Bytes(Vec<UInt8>&& data, Str contentType) noexcept -> Body
+{
+    Body body;
+    body.n_value = codec_t(VIOLET_MOVE(data), contentType);
 
-namespace violet::net::curl {
+    return body;
+}
 
-/// RAII guard to initialize `libcurl`
-///
-/// ## Example
-/// ```cpp
-/// #include <violet/Networking/HTTP/cURL/Global.h>
-/// #include <violet/Networking/HTTP/Client.h>
-///
-/// using namespace violet::net;
-///
-/// auto main() -> int {
-///     curl::Global libcurlInit;
-///     http::Client client;
-///
-///     // ... perform
-///
-///     return 0;
-/// }
-/// ```
-struct Global final {
-    /// Initializes `libcurl`. This will abort the process if libcurl were to
-    /// ever fail initialization.
-    VIOLET_IMPLICIT Global() noexcept;
+auto Body::ContentType() const noexcept -> Optional<Str>
+{
+    return this->n_value.Match(
+        // clang-format off
+        [](const std::monostate&) -> Optional<Str> { return Nothing; },
+        [](const String&) -> Optional<Str> { return "text/plain"; },
+        [](const codec_t& codec) -> Optional<Str> { return codec.ContentType; }
+        // clang-format on
+    );
+}
 
-    /// Initializes `libcurl`. This will abort the process if libcurl were to
-    /// ever fail initialization.
-    ///
-    /// @param flags list of cURL flags to pass by.
-    VIOLET_IMPLICIT Global(int64_t flags) noexcept;
-};
-
-} // namespace violet::net::curl
+auto Body::Data() const noexcept -> Span<const UInt8>
+{
+    return this->n_value.Match(
+        // clang-format off
+        [](const std::monostate&) -> Span<const UInt8> { return {}; },
+        [](const String& text) -> Span<const UInt8> { return {reinterpret_cast<const UInt8*>(text.data()), text.size()}; },
+        [](const codec_t& codec) -> Span<const UInt8> { return codec.Data; }
+        // clang-format on
+    );
+}

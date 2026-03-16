@@ -19,7 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-load("@hedron_compile_commands//:refresh_compile_commands.bzl", "refresh_compile_commands")
+load("@minato//:rcc.bzl", "minato")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load("//bazel:flags.bzl", "BOOL_FLAGS", "STRING_FLAGS")
 
@@ -28,7 +28,7 @@ exports_files(
     visibility = ["//visibility:public"],
 )
 
-refresh_compile_commands(
+minato(
     name = "rcc",
 )
 

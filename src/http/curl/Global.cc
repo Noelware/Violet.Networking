@@ -18,45 +18,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//
-//! # 🌺💜 `violet/Networking/HTTP/cURL/Global.h`
 
-#pragma once
+#include <curl/curl.h>
+#include <violet/Networking/HTTP/cURL/Global.h>
 
-#include <violet/Language/Macros.h>
+#include <cassert>
 
-#include <cstdint>
+using violet::net::curl::Global;
 
-namespace violet::net::curl {
+Global::Global() noexcept
+    : Global(CURL_GLOBAL_DEFAULT)
+{
+}
 
-/// RAII guard to initialize `libcurl`
-///
-/// ## Example
-/// ```cpp
-/// #include <violet/Networking/HTTP/cURL/Global.h>
-/// #include <violet/Networking/HTTP/Client.h>
-///
-/// using namespace violet::net;
-///
-/// auto main() -> int {
-///     curl::Global libcurlInit;
-///     http::Client client;
-///
-///     // ... perform
-///
-///     return 0;
-/// }
-/// ```
-struct Global final {
-    /// Initializes `libcurl`. This will abort the process if libcurl were to
-    /// ever fail initialization.
-    VIOLET_IMPLICIT Global() noexcept;
-
-    /// Initializes `libcurl`. This will abort the process if libcurl were to
-    /// ever fail initialization.
-    ///
-    /// @param flags list of cURL flags to pass by.
-    VIOLET_IMPLICIT Global(int64_t flags) noexcept;
-};
-
-} // namespace violet::net::curl
+Global::Global(int64_t flags) noexcept
+{
+    auto code = curl_global_init(flags);
+    assert(code == CURLcode::CURLE_OK && "failed to initialize libcurl");
+}

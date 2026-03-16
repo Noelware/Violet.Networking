@@ -78,7 +78,10 @@ build:cxx26 --host_cxxopt=-std=c++26
 test --test_output=errors
 
 # CI-based configuration
-build:ci --nokeep_state_after_build
+common:ci --color=no
+common:ci --curses=no
+build:ci --disk_cache=/tmp/bazel/violet
+build:ci --spawn_strategy=local
 test:ci --test_output=all
 common:ci --noshow_progress
 common:ci --verbose_failures
@@ -89,6 +92,9 @@ build --@rules_rust//rust/toolchain/channel=nightly
 # Use Bazel's C++ toolchain as the linker for Rust targets instead of relying
 # on a system linker being available in the sandbox (fixes macOS linker errors).
 build --@rules_rust//rust/settings:experimental_use_cc_common_link=True
+
+# related: https://github.com/bazelbuild/rules_rust/issues/3459
+build --@rules_rust//rust/settings:experimental_use_allocator_libraries_with_mangled_symbols=true
 
 build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
 build --output_groups=+clippy_checks

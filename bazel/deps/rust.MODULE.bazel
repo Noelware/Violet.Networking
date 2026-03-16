@@ -20,21 +20,29 @@
 # SOFTWARE.
 
 bazel_dep(name = "rules_rust", version = "0.69.0")
+single_version_override(
+    module_name = "rules_rust",
+    patch_strip = 1,
+    patches = [
+        "patches/rules_rust/0001-Remove-lresolv-in-darwin-and-macos-triple-mappings.patch",
+    ],
+    version = "0.69.0",
+)
 
 ## Configure Rust toolchain
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2024",
     sha256s = {
-        "2025-02-06/cargo-nightly-x86_64-unknown-linux-gnu.tar.xz": "acd3d3c1722183917859039645836084beac939c4ccc00dfcee095d308980dbb",
-        "2025-02-06/clippy-nightly-x86_64-unknown-linux-gnu.tar.xz": "82016d98fe14300bb9ae8d034dc98677ea06ef8115ddb703d56c697392f29cce",
-        "2025-02-06/llvm-tools-nightly-x86_64-unknown-linux-gnu.tar.xz": "40954e1f4aee937aa71dfe2c5ae4366eb5057b78586da35dfcd480612371f3f2",
-        "2025-02-06/rust-std-nightly-x86_64-unknown-linux-gnu.tar.xz": "5e23b4dc43ac81f7b85ab346337590a0bc6ebe7ba0d06990f81ec238dc782003",
-        "2025-02-06/rustc-nightly-x86_64-unknown-linux-gnu.tar.xz": "7fd3955cc64b9b4a2edd45e365988c9f8cd20defef80d0d785606b554f617d39",
+        "2026-03-15/cargo-nightly-x86_64-unknown-linux-gnu.tar.xz": "8d504cbc02f7badea9eb90b8d9d577e1029d8ee32d03fadfbf9f614759b4e98f",
+        "2026-03-15/clippy-nightly-x86_64-unknown-linux-gnu.tar.xz": "62d6c452bb0ba2c1e008284e294500181a551b78505deda5083dd69a152da9b6",
+        "2026-03-15/llvm-tools-nightly-x86_64-unknown-linux-gnu.tar.xz": "aac98fe662b670d748fc4f65e89dc0700366b0f7f358c520a3d83405dba42ada",
+        "2026-03-15/rust-std-nightly-x86_64-unknown-linux-gnu.tar.xz": "4d62e51a50e0e133b00b25fb1855905dd2ea3ca892a280fafed4801363fa61c0",
+        "2026-03-15/rustc-nightly-x86_64-unknown-linux-gnu.tar.xz": "c6c0cd827573bf60ec1b0f4ab771748396312142725b40953b8598edfd5dd44c",
     },
     versions = [
         # keep in-sync with `rust-toolchain.toml`
-        "nightly/2025-02-06",
+        "nightly/2026-03-15",
     ],
 )
 
@@ -42,11 +50,11 @@ rust.toolchain(
 crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
 crate.spec(
     package = "url",
-    version = "2.5.7",
+    version = "2.5.8",
 )
 crate.spec(
     package = "libc",
-    version = "0.2.180",
+    version = "0.2.183",
 )
 crate.from_specs()
 use_repo(crate, "crates")
