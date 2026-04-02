@@ -914,17 +914,19 @@ Headers(typename Headers<>::size_type, const Alloc& alloc) -> Headers<Alloc>;
 template<typename Alloc>
 Headers(typename Headers<Alloc>::size_type, const Alloc&) -> Headers<Alloc>;
 
-template<typename Iterator>
+template<std::input_iterator Iterator>
 Headers(Iterator, Iterator) -> Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>;
 
-template<typename Iterator, typename Alloc>
+template<std::input_iterator Iterator, typename Alloc>
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
 Headers(Iterator, Iterator, Alloc) -> Headers<Alloc>;
 
-template<typename Iterator>
+template<std::input_iterator Iterator>
 Headers(Iterator, Iterator, typename Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>::size_type)
     -> Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>;
 
-template<typename Iterator, typename Alloc>
+template<std::input_iterator Iterator, typename Alloc>
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
 Headers(Iterator, Iterator, typename Headers<Alloc>::size_type, Alloc) -> Headers<Alloc>;
 
 Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>)
