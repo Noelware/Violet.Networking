@@ -909,40 +909,48 @@ private:
     Map n_map;
 };
 
+// TODO(@auguwu/Noel): Remove the explicit, verbose deduction guides. Though, this is a Clang 20
+// issue, Clang 21+ and GCC 14+ work without the explicit verbose guides.
+
 Headers(typename std::allocator_traits<default_map_allocator_t>::size_type) -> Headers<default_map_allocator_t>;
 
 template<typename Alloc>
-    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>
+        && !std::integral<Alloc> && !std::input_iterator<Alloc>)
 Headers(typename std::allocator_traits<Alloc>::size_type, const Alloc&) -> Headers<Alloc>;
 
 template<std::input_iterator Iterator>
 Headers(Iterator, Iterator) -> Headers<default_map_allocator_t>;
-
-template<std::input_iterator Iterator, typename Alloc>
-    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
-Headers(Iterator, Iterator, Alloc) -> Headers<Alloc>;
 
 template<std::input_iterator Iterator>
 Headers(Iterator, Iterator, typename std::allocator_traits<default_map_allocator_t>::size_type)
     -> Headers<default_map_allocator_t>;
 
 template<std::input_iterator Iterator, typename Alloc>
-    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
-Headers(Iterator, Iterator, typename std::allocator_traits<Alloc>::size_type, Alloc) -> Headers<Alloc>;
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>
+        && !std::integral<Alloc> && !std::input_iterator<Alloc>)
+Headers(Iterator, Iterator, const Alloc&) -> Headers<Alloc>;
+
+template<std::input_iterator Iterator, typename Alloc>
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>
+        && !std::integral<Alloc> && !std::input_iterator<Alloc>)
+Headers(Iterator, Iterator, typename std::allocator_traits<Alloc>::size_type, const Alloc&) -> Headers<Alloc>;
 
 Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>) -> Headers<default_map_allocator_t>;
-
-template<typename Alloc>
-    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
-Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>, Alloc) -> Headers<Alloc>;
 
 Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>,
     typename std::allocator_traits<default_map_allocator_t>::size_type) -> Headers<default_map_allocator_t>;
 
 template<typename Alloc>
-    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>
+        && !std::integral<Alloc> && !std::input_iterator<Alloc>)
+Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>, const Alloc&) -> Headers<Alloc>;
+
+template<typename Alloc>
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>
+        && !std::integral<Alloc> && !std::input_iterator<Alloc>)
 Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>, typename std::allocator_traits<Alloc>::size_type,
-    Alloc) -> Headers<Alloc>;
+    const Alloc&) -> Headers<Alloc>;
 
 } // namespace violet::net::http
 
