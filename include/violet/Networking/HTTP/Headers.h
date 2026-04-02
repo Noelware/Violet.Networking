@@ -298,7 +298,7 @@ struct HeaderName final {
     /// auto bad = HeaderName::From("bad header");   // Err: space not allowed
     /// ```
     template<std::convertible_to<violet::Str> String>
-    constexpr static auto From(String&& input) noexcept -> violet::Result<HeaderName, InvalidHeaderName>
+    static auto From(String&& input) noexcept -> violet::Result<HeaderName, InvalidHeaderName>
     {
         violet::String str(VIOLET_FWD(String, input));
         if (str.empty() || !header::detail::isValidHeaderName(str)) {
@@ -423,7 +423,7 @@ struct HeaderValue final {
     /// auto bad = HeaderValue::From("val\nue");    // Err: LF not permitted
     /// ```
     template<std::convertible_to<violet::Str> String>
-    constexpr static auto From(String&& input) noexcept -> violet::Result<HeaderValue, InvalidHeaderValue>
+    static auto From(String&& input) noexcept -> violet::Result<HeaderValue, InvalidHeaderValue>
     {
         violet::Str str(VIOLET_FWD(String, input));
         violet::Str trimmed = header::detail::trimHeaderValue(str);
