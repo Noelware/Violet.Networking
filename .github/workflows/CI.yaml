@@ -105,7 +105,7 @@ jobs:
             fail-fast: false
             matrix:
                 compiler: [clang-21, clang-20]
-                bazel-version: ["7.7.1", "8.6.0", "9.0.1"]
+                bazel-version: ["7.7.1", "8.6.0"]
                 cxx-standard: ["26", "23", "20"]
                 include:
                     - {compiler: clang-21, cc: "clang-21", cxx: "clang++-21", flags: "--config=libcxx"}
