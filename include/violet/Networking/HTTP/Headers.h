@@ -302,7 +302,7 @@ struct HeaderName final {
     {
         violet::String str(VIOLET_FWD(String, input));
         if (str.empty() || !header::detail::isValidHeaderName(str)) {
-            return violet::Err(InvalidHeaderName{});
+            return violet::Err(InvalidHeaderName{ });
         }
 
         for (auto& ch: str) {
@@ -428,7 +428,7 @@ struct HeaderValue final {
         violet::Str str(VIOLET_FWD(String, input));
         violet::Str trimmed = header::detail::trimHeaderValue(str);
         if (!header::detail::isValidHeaderValue(trimmed)) {
-            return Err(InvalidHeaderValue{});
+            return Err(InvalidHeaderValue{ });
         }
 
         return HeaderValue(trimmed);
@@ -524,6 +524,9 @@ struct std::hash<violet::net::http::HeaderValue> final {
 
 namespace violet::net::http {
 
+/// The default allocator that is used within [`Headers`].
+using default_map_allocator_t = std::allocator<violet::Pair<const HeaderName, HeaderValue>>;
+
 /// A map of validated HTTP header field-names to field-values.
 ///
 /// `Headers` is a thin, ergonomic wrapper around [`std::unordered_map`] keyed by
@@ -564,7 +567,7 @@ namespace violet::net::http {
 ///     violet::Println("Content-Type: {}", *contentType);
 /// }
 /// ```
-template<typename Alloc = std::allocator<violet::Pair<const HeaderName, HeaderValue>>>
+template<typename Alloc = default_map_allocator_t>
     requires(
         std::same_as<typename std::allocator_traits<Alloc>::value_type, violet::Pair<const HeaderName, HeaderValue>>)
 struct Headers final {
@@ -866,7 +869,7 @@ struct Headers final {
     }
 
     /// Returns **true** if `name` is present in the map.
-    auto Contains(const HeaderName& name) const -> bool
+    [[nodiscard]] auto Contains(const HeaderName& name) const -> bool
     {
         return this->n_map.contains(name);
     }
@@ -906,42 +909,40 @@ private:
     Map n_map;
 };
 
-Headers(typename Headers<>::size_type) -> Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>;
+Headers(typename std::allocator_traits<default_map_allocator_t>::size_type) -> Headers<default_map_allocator_t>;
 
 template<typename Alloc>
-Headers(typename Headers<>::size_type, const Alloc& alloc) -> Headers<Alloc>;
-
-template<typename Alloc>
-Headers(typename Headers<Alloc>::size_type, const Alloc&) -> Headers<Alloc>;
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
+Headers(typename std::allocator_traits<Alloc>::size_type, const Alloc&) -> Headers<Alloc>;
 
 template<std::input_iterator Iterator>
-Headers(Iterator, Iterator) -> Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>;
+Headers(Iterator, Iterator) -> Headers<default_map_allocator_t>;
 
 template<std::input_iterator Iterator, typename Alloc>
     requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
 Headers(Iterator, Iterator, Alloc) -> Headers<Alloc>;
 
 template<std::input_iterator Iterator>
-Headers(Iterator, Iterator, typename Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>::size_type)
-    -> Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>;
+Headers(Iterator, Iterator, typename std::allocator_traits<default_map_allocator_t>::size_type)
+    -> Headers<default_map_allocator_t>;
 
 template<std::input_iterator Iterator, typename Alloc>
     requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
-Headers(Iterator, Iterator, typename Headers<Alloc>::size_type, Alloc) -> Headers<Alloc>;
+Headers(Iterator, Iterator, typename std::allocator_traits<Alloc>::size_type, Alloc) -> Headers<Alloc>;
 
-Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>)
-    -> Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>;
+Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>) -> Headers<default_map_allocator_t>;
 
 template<typename Alloc>
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
 Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>, Alloc) -> Headers<Alloc>;
 
 Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>,
-    typename Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>::size_type)
-    -> Headers<std::allocator<violet::Pair<const HeaderName, HeaderValue>>>;
+    typename std::allocator_traits<default_map_allocator_t>::size_type) -> Headers<default_map_allocator_t>;
 
 template<typename Alloc>
-Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>, typename Headers<Alloc>::size_type, Alloc)
-    -> Headers<Alloc>;
+    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>)
+Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>, typename std::allocator_traits<Alloc>::size_type,
+    Alloc) -> Headers<Alloc>;
 
 } // namespace violet::net::http
 

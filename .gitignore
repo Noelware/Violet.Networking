@@ -167,7 +167,8 @@ Cargo.lock
 .ionide
 
 !rust/Cargo.lock
-dist.tgz
+bazeldist.tgz
+.clangd
 
 **/.usr.bazelrc
 .bazeldist/
