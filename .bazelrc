@@ -19,6 +19,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# TODO(@auguwu/Noel): Use `https://bcr.noelware.cloud` once available
+common --registry=https://raw.githubusercontent.com/Noelware/bazel-registry/master/
+common --registry=https://bcr.bazel.build
+
 # For `--config=dbg`, we set `--compilation_mode` to `dbg`
 build:dbg --compilation_mode=dbg
 

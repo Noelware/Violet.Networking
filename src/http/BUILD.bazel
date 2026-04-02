@@ -31,3 +31,17 @@ cc_library(
         "@violet//violet/experimental:oneof",
     ],
 )
+
+cc_library(
+    name = "headers",
+    hdrs = ["//include/violet/Networking/HTTP:Headers.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@violet//violet:iterator",
+        "@violet//violet/container:optional",
+        "@violet//violet/container:result",
+    ] + select({
+        "//bazel/flags:http_client_backend_curl": ["@curl"],
+        "//conditions:default": [],
+    }),
+)

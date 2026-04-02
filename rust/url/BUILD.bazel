@@ -34,7 +34,7 @@ rust_static_library(
     }),
     visibility = ["//visibility:public"],
     deps = [
-        "@crates//:libc",
-        "@crates//:url",
+        "@violet_net_crates//:libc",
+        "@violet_net_crates//:url",
     ],
 )

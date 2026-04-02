@@ -26,3 +26,9 @@ cc_test(
     srcs = ["Body.test.cc"],
     deps = ["//src/http:body"],
 )
+
+cc_test(
+    name = "headers",
+    srcs = ["Headers.test.cc"],
+    deps = ["//src/http:headers"],
+)

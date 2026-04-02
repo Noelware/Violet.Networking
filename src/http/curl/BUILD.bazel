@@ -21,6 +21,11 @@
 
 load("//bazel:cc.bzl", "cc_library")
 
+exports_files(
+    glob(["*.cc"]),
+    visibility = ["//src/http:__subpackages__"],
+)
+
 cc_library(
     name = "global",
     srcs = ["Global.cc"],

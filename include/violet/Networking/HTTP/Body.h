@@ -28,23 +28,6 @@
 //! - **Text** — a plain UTF-8 string sent as `application/text`.
 //! - **Codec** — bytes produced by a `Codec` implementation, paired with the
 //!   content-type that codec declares.
-//!
-//! ## Example
-//! ```cpp
-//! #include <violet/Networking/HTTP/Body.h>
-//!
-//! using violet::net::http::Body;
-//!
-//! // Plain-text body
-//! auto text = Body::Text("hello, world");
-//!
-//! // Raw bytes with an explicit content-type
-//! Vec<UInt8> raw = {0x89, 0x50, 0x4e, 0x47};
-//! auto bytes = Body::Bytes(std::move(raw), "image/png");
-//!
-//! // Codec-encoded body (e.g. JSON)
-//! auto json = Body::From<JsonCodec>(myObject);
-//! ```
 
 #pragma once
 

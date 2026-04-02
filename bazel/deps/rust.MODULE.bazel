@@ -56,5 +56,5 @@ crate.spec(
     package = "libc",
     version = "0.2.183",
 )
-crate.from_specs()
-use_repo(crate, "crates")
+crate.from_specs(name = "violet_net_crates")
+use_repo(crate, "violet_net_crates")

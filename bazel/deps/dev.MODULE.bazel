@@ -19,10 +19,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-bazel_dep(name = "rules_shell", version = "0.6.1", dev_dependency = True)
+bazel_dep(name = "rules_shell", version = "0.7.1", dev_dependency = True)
 bazel_dep(name = "minato", dev_dependency = True)
 git_override(
     module_name = "minato",
-    commit = "3000ab5f8833e7bdbd2b1e0ba73056a69f36fb1f",
+    commit = "9616121fe1039032a658b6ddb435dfd4101e08e5",
     remote = "https://github.com/auguwu/minato.git",
 )
