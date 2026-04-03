@@ -89,6 +89,7 @@ build:ci --spawn_strategy=local
 test:ci --test_output=all
 common:ci --noshow_progress
 common:ci --verbose_failures
+common:ci --experimental_ui_max_stdouterr_bytes=-1
 
 ## Rust
 build --@rules_rust//rust/toolchain/channel=nightly
@@ -118,12 +119,18 @@ common:asan --config=san
 common:asan --@violet//buildsystem/bazel/flags:asan=True
 common:asan --//bazel/flags:asan=True
 common:asan --@rules_rust//rust/settings:extra_rustc_flags=-Zsanitizer=address
+common:asan --@rules_rust//rust/settings:extra_exec_rustc_flags=-Zsanitizer=address
+common:asan --@rules_rust//rust/settings:extra_rustc_flags=-Clink-arg=-fsanitize=address
+common:asan --@rules_rust//rust/settings:extra_exec_rustc_flags=-Clink-arg=-fsanitize=address
 
 ## ~ `--config=msan` enables Memory Sanitizer (MSan)
 common:msan --config=san
 common:msan --@violet//buildsystem/bazel/flags:msan=True
 common:msan --//bazel/flags:msan=True
 common:msan --@rules_rust//rust/settings:extra_rustc_flags=-Zsanitizer=memory
+common:msan --@rules_rust//rust/settings:extra_exec_rustc_flags=-Zsanitizer=memory
+common:msan --@rules_rust//rust/settings:extra_rustc_flags=-Clink-arg=-fsanitize=memory
+common:msan --@rules_rust//rust/settings:extra_exec_rustc_flags=-Clink-arg=-fsanitize=memory
 
 ## ~ `--config=ubsan` enables Undefined Behaviour Sanitizer (UBSan)
 common:ubsan --config=san
@@ -136,6 +143,9 @@ common:tsan --config=san
 common:tsan --@violet//buildsystem/bazel/flags:tsan=True
 common:tsan --//bazel/flags:tsan=True
 common:tsan --@rules_rust//rust/settings:extra_rustc_flags=-Zsanitizer=thread
+common:tsan --@rules_rust//rust/settings:extra_exec_rustc_flags=-Zsanitizer=thread
+common:tsan --@rules_rust//rust/settings:extra_rustc_flags=-Clink-arg=-fsanitize=thread
+common:tsan --@rules_rust//rust/settings:extra_exec_rustc_flags=-Clink-arg=-fsanitize=thread
 
 # Import .usr.bazelrc if it exists
 try-import %workspace%/.usr.bazelrc

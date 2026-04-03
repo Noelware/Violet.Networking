@@ -569,10 +569,17 @@ using default_map_allocator_t = std::allocator<violet::Pair<const HeaderName, He
 /// ```
 template<typename Alloc = default_map_allocator_t>
     requires(
-        std::same_as<typename std::allocator_traits<Alloc>::value_type, violet::Pair<const HeaderName, HeaderValue>>)
+        std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>
+        && !std::integral<Alloc> && !std::input_iterator<Alloc>)
 struct Headers final {
+    static_assert(
+        std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>,
+        "Headers<Alloc>: Alloc::value_type must be violet::Pair<const HeaderName, HeaderValue>; "
+        "check CTAD deduction, Alloc was likely deduced as an iterator or integral type"
+    );
+
     using Map = std::unordered_map<HeaderName, HeaderValue, std::hash<HeaderName>, std::equal_to<>, Alloc>;
-    using size_type = Map::size_type;
+    using size_type = std::allocator_traits<Alloc>::size_type;
 
     /// Constructs an empty `Headers` map using the default allocator.
     VIOLET_IMPLICIT Headers() noexcept(std::is_nothrow_constructible_v<Map>) = default;
@@ -603,8 +610,8 @@ struct Headers final {
     /// Constructs a `Headers` map from the iterator range `[first, last)`.
     ///
     /// Each element in the range must be a `violet::Pair<HeaderName, HeaderValue>`.
-    template<typename Iterator>
-    VIOLET_IMPLICIT Headers(Iterator first, Iterator last) noexcept(
+    template<std::input_iterator Iterator>
+    VIOLET_EXPLICIT Headers(Iterator first, Iterator last) noexcept(
         std::is_nothrow_constructible_v<Map, Iterator, Iterator>)
         : n_map(first, last)
     {
@@ -614,8 +621,8 @@ struct Headers final {
     /// the selected allocator.
     ///
     /// Each element in the range must be a `violet::Pair<HeaderName, HeaderValue>`.
-    template<typename Iterator>
-    VIOLET_IMPLICIT Headers(Iterator first, Iterator last, const Alloc& alloc) noexcept(
+    template<std::input_iterator Iterator>
+    VIOLET_EXPLICIT Headers(Iterator first, Iterator last, const Alloc& alloc) noexcept(
         std::is_nothrow_constructible_v<Map, Iterator, Iterator, const Alloc&>)
         : n_map(first, last, alloc)
     {
@@ -623,7 +630,7 @@ struct Headers final {
 
     /// Constructs a `Headers` map from `[first, last)` with at least `size`
     /// buckets pre-allocated with the default allocator.
-    template<typename Iterator>
+    template<std::input_iterator Iterator>
     VIOLET_IMPLICIT Headers(Iterator first, Iterator last, size_type size) noexcept(
         std::is_nothrow_constructible_v<Map, Iterator, Iterator, size_type>)
         : n_map(first, last, size)
@@ -632,8 +639,8 @@ struct Headers final {
 
     /// Constructs a `Headers` map from `[first, last)` with at least `size`
     /// buckets pre-allocated with the selected allocator.
-    template<typename Iterator>
-    VIOLET_IMPLICIT Headers(Iterator first, Iterator last, size_type size, const Alloc& alloc) noexcept(
+    template<std::input_iterator Iterator>
+    VIOLET_EXPLICIT Headers(Iterator first, Iterator last, size_type size, const Alloc& alloc) noexcept(
         std::is_nothrow_constructible_v<Map, Iterator, Iterator, size_type, const Alloc&>)
         : n_map(first, last, size, alloc)
     {
@@ -920,21 +927,34 @@ template<typename Alloc>
 Headers(typename std::allocator_traits<Alloc>::size_type, const Alloc&) -> Headers<Alloc>;
 
 template<std::input_iterator Iterator>
-Headers(Iterator, Iterator) -> Headers<default_map_allocator_t>;
+    requires(!std::same_as<Iterator, default_map_allocator_t>)
+Headers(Iterator, Iterator)
+    -> Headers<default_map_allocator_t>;
 
 template<std::input_iterator Iterator>
+    requires(!std::same_as<Iterator, default_map_allocator_t>)
 Headers(Iterator, Iterator, typename std::allocator_traits<default_map_allocator_t>::size_type)
     -> Headers<default_map_allocator_t>;
 
 template<std::input_iterator Iterator, typename Alloc>
-    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>
-        && !std::integral<Alloc> && !std::input_iterator<Alloc>)
-Headers(Iterator, Iterator, const Alloc&) -> Headers<Alloc>;
+    requires(
+        std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>> &&
+        !std::integral<Alloc> &&
+        !std::input_iterator<Alloc> &&
+        !std::is_pointer_v<Alloc>
+    )
+Headers(Iterator, Iterator, const Alloc&)
+    -> Headers<Alloc>;
 
 template<std::input_iterator Iterator, typename Alloc>
-    requires(std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>>
-        && !std::integral<Alloc> && !std::input_iterator<Alloc>)
-Headers(Iterator, Iterator, typename std::allocator_traits<Alloc>::size_type, const Alloc&) -> Headers<Alloc>;
+    requires(
+        std::same_as<typename Alloc::value_type, violet::Pair<const HeaderName, HeaderValue>> &&
+        !std::integral<Alloc> &&
+        !std::input_iterator<Alloc> &&
+        !std::is_pointer_v<Alloc>
+    )
+Headers(Iterator, Iterator, typename std::allocator_traits<Alloc>::size_type, const Alloc&)
+    -> Headers<Alloc>;
 
 Headers(std::initializer_list<violet::Pair<HeaderName, HeaderValue>>) -> Headers<default_map_allocator_t>;
 

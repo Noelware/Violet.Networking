@@ -227,16 +227,19 @@ TEST(Headers, InitializerListConstructor)
     EXPECT_EQ(h.Get<"accept">(), HeaderValue::From<"*/*">());
 }
 
+#if defined(VIOLET_GCC) || (defined(__clang_major__) && __clang_major__ >= 21)
 TEST(Headers, IteratorRangeConstructor)
 {
-    std::vector<violet::Pair<HeaderName, HeaderValue>> entries = {
+    using Entry = violet::Pair<const HeaderName, HeaderValue>;
+    Entry entries[] = {
         { HeaderName::From<"content-type">(), HeaderValue::From<"text/plain">() },
-        { HeaderName::From<"accept">(), HeaderValue::From<"*/*">() },
+        { HeaderName::From<"accept">(),       HeaderValue::From<"*/*">()        },
     };
 
-    Headers h(entries.begin(), entries.end());
+    Headers h(std::begin(entries), std::end(entries));
     EXPECT_EQ(h.Size(), 2U);
 }
+#endif
 
 TEST(Headers, EmptyReturnsTrueWhenEmpty)
 {
