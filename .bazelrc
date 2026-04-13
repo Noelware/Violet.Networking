@@ -142,10 +142,6 @@ common:ubsan --//bazel/flags:ubsan=True
 common:tsan --config=san
 common:tsan --@violet//buildsystem/bazel/flags:tsan=True
 common:tsan --//bazel/flags:tsan=True
-common:tsan --@rules_rust//rust/settings:extra_rustc_flags=-Zsanitizer=thread
-common:tsan --@rules_rust//rust/settings:extra_exec_rustc_flags=-Zsanitizer=thread
-common:tsan --@rules_rust//rust/settings:extra_rustc_flags=-Clink-arg=-fsanitize=thread
-common:tsan --@rules_rust//rust/settings:extra_exec_rustc_flags=-Clink-arg=-fsanitize=thread
 
 # Import .usr.bazelrc if it exists
 try-import %workspace%/.usr.bazelrc

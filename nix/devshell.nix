@@ -24,6 +24,8 @@
   lib,
   stdenvAdapters,
   llvmPackages_20,
+  llvmPackages_21,
+  llvmPackages_22,
   ## os-specific
   ### - linux
   valgrind,
@@ -54,8 +56,12 @@
   # we develop Violet.Networking in LLVM 21 and above.
   llvm = let
     oldStdenv = stdenv; # keep a copy of the old standard environment
-    pkgs = {inherit llvmPackages_20;}; # a hack so that we can do `pkgs."llvmPackages_${version}"`
-    version = "20";
+    version = "22"; # update this to use a different LLVM version, keep it the latest
+
+    # a hack so that we can do `pkgs."llvmPackages_${version}"`
+    pkgs = {
+      inherit llvmPackages_22 llvmPackages_21 llvmPackages_20;
+    };
   in rec {
     inherit version;
 

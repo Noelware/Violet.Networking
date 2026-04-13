@@ -20,25 +20,17 @@
 # SOFTWARE.
 
 STRING_FLAGS = {
-    # ## `--@violet.net//bazel/flags:http_client_backend=[curl|winhttp|none]`
+    # ## `--@violet.net//bazel/flags:http_client_transport=[curl|winhttp|none]`
     # Determines the backend for the `violet::net::HttpClient` C++ struct. By default,
     # it'll use `libcurl` as that is majorily supported on all platforms but there is
-    # a WinHTTP backend for Windows users.
+    # a WinHTTP transport for Windows users.
     #
-    # You can set this to `none` and build your own backend as you wish, you can
+    # You can set this to `none` and build your own HTTP transport as you wish, you can
     # view a reference at in the `src/http/backends/cURL.cc` file.
-    "http_client_backend": ["curl", "winhttp", "none"],
+    "http_client_transport": ["curl", "winhttp", "none"],
 }
 
 BOOL_FLAGS = [
-    # ## `--@violet.net//bazel/flags:logrin=[True|False]
-    # Enables the use of Noel's `logrin` (https://github.com/auguwu/logrin) C++ library
-    # to provide rich logs for the HTTP client.
-    #
-    # You would have to initialize the log factory (with `logrin::LogFactory::Init`) for any
-    # logs to appear.
-    "logrin",
-
     # ## `--@violet.net//bazel/flags:ubsan=[True|False]`
     # Enables the Undefined Behaviour Sanitizer that is used to catch
     # undefined behaviour mistakes. Because, you know, I am not the

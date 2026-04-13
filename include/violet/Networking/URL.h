@@ -90,12 +90,12 @@ private:
 };
 
 struct Url final {
+    VIOLET_DISALLOW_CONSTRUCTOR(Url);
     VIOLET_DISALLOW_COPY(Url);
+    ~Url();
 
     VIOLET_IMPLICIT Url(Url&& other) noexcept;
     auto operator=(Url&& other) noexcept -> Url&;
-
-    ~Url() noexcept;
 
     static auto Parse(Str input) noexcept -> Result<Url, UrlError>;
     static auto ParseWithParams(Str input, Span<CStr> params) noexcept -> Result<Url, UrlError>;

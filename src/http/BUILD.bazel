@@ -21,11 +21,14 @@
 
 load("//bazel:cc.bzl", "cc_library")
 
+package(
+    default_visibility = ["//visibility:public"],
+)
+
 cc_library(
     name = "body",
     srcs = ["Body.cc"],
     hdrs = ["//include/violet/Networking/HTTP:Body.h"],
-    visibility = ["//visibility:public"],
     deps = [
         "@violet//violet",
         "@violet//violet/experimental:oneof",
@@ -33,15 +36,84 @@ cc_library(
 )
 
 cc_library(
+    name = "client",
+    srcs = ["Client.cc"],
+    hdrs = ["//include/violet/Networking/HTTP:Client.h"],
+    deps = [
+        ":transport",
+        "@violet//violet",
+    ],
+)
+
+cc_library(
+    name = "error",
+    srcs = ["Error.cc"],
+    hdrs = ["//include/violet/Networking/HTTP:Error.h"],
+    deps = [
+        ":headers",
+        "//src:url",
+        "@violet//violet",
+        "@violet//violet/experimental:oneof",
+        "@violet//violet/support:demangle",
+    ],
+)
+
+cc_library(
     name = "headers",
     hdrs = ["//include/violet/Networking/HTTP:Headers.h"],
-    visibility = ["//visibility:public"],
     deps = [
         "@violet//violet:iterator",
         "@violet//violet/container:optional",
         "@violet//violet/container:result",
     ] + select({
-        "//bazel/flags:http_client_backend_curl": ["@curl"],
+        "//bazel/flags:http_client_transport_curl": ["@curl"],
         "//conditions:default": [],
     }),
+)
+
+cc_library(
+    name = "interceptor",
+    hdrs = ["//include/violet/Networking/HTTP:Interceptor.h"],
+    deps = [
+        "@violet//violet",
+    ],
+)
+
+cc_library(
+    name = "request",
+    srcs = select({
+        "//bazel/flags:http_client_transport_curl": ["//src/http/curl:Request.cc"],
+        "//conditions:default": [],
+    }),
+    hdrs = ["//include/violet/Networking/HTTP:Request.h"],
+    deps = [
+        "@violet//violet",
+    ] + select({
+        "//bazel/flags:http_client_transport_curl": ["@curl"],
+        "//conditions:default": [],
+    }),
+)
+
+cc_library(
+    name = "response",
+    srcs = select({
+        "//bazel/flags:http_client_transport_curl": ["//src/http/curl:Response.cc"],
+        "//conditions:default": [],
+    }),
+    hdrs = ["//include/violet/Networking/HTTP:Response.h"],
+    deps = [
+        "@violet//violet",
+    ] + select({
+        "//bazel/flags:http_client_transport_curl": ["@curl"],
+        "//conditions:default": [],
+    }),
+)
+
+cc_library(
+    name = "transport",
+    hdrs = ["//include/violet/Networking/HTTP:Transport.h"],
+    deps = [
+        ":error",
+        "@violet//violet",
+    ],
 )
