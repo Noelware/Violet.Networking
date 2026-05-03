@@ -23,7 +23,6 @@
 
 #include <violet/Container/Optional.h>
 #include <violet/Container/Result.h>
-#include <violet/Violet.h>
 
 #include "absl/numeric/int128.h"
 
@@ -238,7 +237,7 @@ struct VIOLET_API AddrV6 final {
     }
 
 private:
-    Array<UInt8, 16> n_bytes{};
+    Array<UInt8, 16> n_bytes{ };
 };
 
 /// Represents an error returned when parsing an invalid IPv4 address.
@@ -310,7 +309,7 @@ struct std::hash<violet::net::ip::AddrV6> final {
     auto operator()(const violet::net::ip::AddrV6& addr) const noexcept -> violet::UInt
     {
         auto value = addr.AsUInt128();
-        return std::hash<violet::UInt64>{}(absl::Uint128High64(value))
-            ^ (std::hash<violet::UInt64>{}(absl::Uint128Low64(value)) << 1);
+        return std::hash<violet::UInt64>{ }(absl::Uint128High64(value))
+            ^ (std::hash<violet::UInt64>{ }(absl::Uint128Low64(value)) << 1);
     }
 };

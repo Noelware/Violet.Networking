@@ -27,21 +27,20 @@ package(
 
 violet_cc_library(
     name = "addr_v4",
-    srcs = ["AddrV4.cc"],
+    srcs = ["//src/ip:AddrV4.cc"],
     hdrs = ["//include/violet/Networking/IP:AddrV4.h"],
     deps = [
-        "@violet//violet",
+        "@violet//violet:strings",
         "@violet//violet/container",
     ],
 )
 
 violet_cc_library(
     name = "addr_v6",
-    srcs = ["AddrV6.cc"],
+    srcs = ["//src/ip:AddrV6.cc"],
     hdrs = ["//include/violet/Networking/IP:AddrV6.h"],
     deps = [
         "@absl//absl/numeric:int128",
-        "@violet//violet",
         "@violet//violet/container",
     ],
 )

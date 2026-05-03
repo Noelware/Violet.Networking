@@ -30,17 +30,19 @@ violet_cc_library(
     srcs = ["//src/socket:AddrV4.cc"],
     hdrs = ["//include/violet/Networking/Socket:AddrV4.h"],
     deps = [
-        "//src/ip:addr_v4",
+        "//net/ip:addr_v4",
+        "@violet//violet:strings",
         "@violet//violet/experimental:oneof",
     ],
 )
 
 violet_cc_library(
     name = "addr_v6",
-    srcs = ["AddrV6.cc"],
+    srcs = ["//src/socket:AddrV6.cc"],
     hdrs = ["//include/violet/Networking/Socket:AddrV6.h"],
     deps = [
-        "//src/ip:addr_v6",
+        "//net/ip:addr_v6",
+        "@violet//violet:strings",
         "@violet//violet/experimental:oneof",
     ],
 )

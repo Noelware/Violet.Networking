@@ -23,11 +23,9 @@
 
 #include <violet/Container/Optional.h>
 #include <violet/Container/Result.h>
+#include <violet/Experimental/OneOf.h>
 #include <violet/Networking/Socket/AddrV4.h>
 #include <violet/Networking/Socket/AddrV6.h>
-#include <violet/Violet.h>
-
-#include <variant>
 
 namespace violet::net {
 
@@ -71,35 +69,27 @@ struct SocketAddress final {
 
     [[nodiscard]] constexpr auto TypeOf() const noexcept -> Type
     {
-        return std::holds_alternative<socket::AddrV4>(this->n_value) ? Type::V4 : Type::V6;
+        return this->n_value.Holds<socket::AddrV4>() ? Type::V4 : Type::V6;
     }
 
-    [[nodiscard]] constexpr auto AsV4() const noexcept -> Optional<socket::AddrV4>
+    [[nodiscard]] constexpr auto AsV4() const noexcept -> Optional<std::reference_wrapper<const socket::AddrV4>>
     {
-        if (std::holds_alternative<socket::AddrV4>(this->n_value)) {
-            return std::get<socket::AddrV4>(this->n_value);
-        }
-
-        return Nothing;
+        return this->n_value.Get<socket::AddrV4>();
     }
 
-    [[nodiscard]] constexpr auto AsV6() const noexcept -> Optional<socket::AddrV6>
+    [[nodiscard]] constexpr auto AsV6() const noexcept -> Optional<std::reference_wrapper<const socket::AddrV6>>
     {
-        if (std::holds_alternative<socket::AddrV6>(this->n_value)) {
-            return std::get<socket::AddrV6>(this->n_value);
-        }
-
-        return Nothing;
+        return this->n_value.Get<socket::AddrV6>();
     }
 
     [[nodiscard]] constexpr auto AsV4Unchecked(Unsafe) const noexcept -> socket::AddrV4
     {
-        return std::get<socket::AddrV4>(this->n_value);
+        return this->AsV4().UnwrapUnchecked(Unsafe("falls under the callee"));
     }
 
     [[nodiscard]] constexpr auto AsV6Unchecked(Unsafe) const noexcept -> socket::AddrV6
     {
-        return std::get<socket::AddrV6>(this->n_value);
+        return this->AsV6().UnwrapUnchecked(Unsafe("falls under the callee"));
     }
 
     [[nodiscard]] auto ToString() const noexcept -> String;
@@ -110,13 +100,13 @@ struct SocketAddress final {
 
     constexpr VIOLET_EXPLICIT operator socket::AddrV4() const noexcept
     {
-        VIOLET_DEBUG_ASSERT(std::holds_alternative<socket::AddrV4>(this->n_value), "current holder is a IPv6 address");
+        VIOLET_DEBUG_ASSERT(this->TypeOf() == Type::V4, "current holder is a IPv6 address");
         return this->AsV4Unchecked(Unsafe("either checked in debug mode or doesn't care in release builds"));
     }
 
     constexpr VIOLET_EXPLICIT operator socket::AddrV6() const noexcept
     {
-        VIOLET_DEBUG_ASSERT(std::holds_alternative<socket::AddrV6>(this->n_value), "current holder is a IPv4 address");
+        VIOLET_DEBUG_ASSERT(this->TypeOf() == Type::V6, "current holder is a IPv4 address");
         return this->AsV6Unchecked(Unsafe("either checked in debug mode or doesn't care in release builds"));
     }
 
@@ -130,16 +120,24 @@ struct SocketAddress final {
         return !(self == other);
     }
 
-    constexpr friend auto operator<=>(const SocketAddress& self, const SocketAddress& other) noexcept
-        -> std::strong_ordering
+    constexpr friend auto operator<=>(const SocketAddress& self, const SocketAddress& other) -> std::strong_ordering
     {
-        return self.n_value <=> other.n_value;
+        if (auto cmp = self.n_value.Index() <=> other.n_value.Index(); cmp != 0) {
+            return cmp;
+        }
+
+        return self.n_value.Visit([&other](auto& value) -> std::strong_ordering {
+            using type = std::remove_cvref_t<decltype(value)>;
+            return value <=> other.n_value.template Get<type>().Unwrap();
+        });
     }
 
 private:
     constexpr VIOLET_IMPLICIT SocketAddress() noexcept = default;
 
-    std::variant<socket::AddrV4, socket::AddrV6> n_value;
+    using variant_type = violet::experimental::OneOf<socket::AddrV4, socket::AddrV6>;
+
+    variant_type n_value;
 };
 
 } // namespace violet::net

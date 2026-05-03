@@ -62,6 +62,7 @@ violet_cc_library(
         "//src/ip:addr_v4",
         "//src/ip:addr_v6",
         "@violet//violet",
+        "@violet//violet/experimental:oneof",
     ],
 )
 
@@ -75,5 +76,6 @@ violet_cc_library(
         "//src/socket:addr_v4",
         "//src/socket:addr_v6",
         "@violet//violet",
+        "@violet//violet/experimental:oneof",
     ],
 )

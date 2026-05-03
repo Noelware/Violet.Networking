@@ -67,7 +67,7 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
         return Err(InvalidV6AddressError::invalidNumberOfParts());
     }
 
-    Array<UInt16, 8> hextets{};
+    Array<UInt16, 8> hextets{ };
     Vec<UInt16> headHextets;
     Vec<UInt16> tailHextets;
     bool seenIPv4 = false;
@@ -86,7 +86,7 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
         UInt32 value = 0;
         auto [ptr, ec] = std::from_chars(part.data(), part.data() + part.size(), value, 16);
 
-        if (ec != std::errc{} || ptr != part.data() + part.size()) {
+        if (ec != std::errc{ } || ptr != part.data() + part.size()) {
             return Err(InvalidV6AddressError::invalidIntegral(ec));
         }
 
@@ -104,7 +104,7 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
 
         seenIPv4 = true;
 
-        UInt32 octets[4]{};
+        UInt32 octets[4]{ };
         size_t start = 0;
         for (UInt i = 0; i < 4; ++i) {
             if (start >= part.size()) {
@@ -118,7 +118,7 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
 
             UInt32 value = 0;
             auto [ptr, ec] = std::from_chars(part.data() + start, part.data() + end, value, 10);
-            if (ec != std::errc{} || value > 255 || ptr != part.data() + end) {
+            if (ec != std::errc{ } || value > 255 || ptr != part.data() + end) {
                 return Err(InvalidV6AddressError::invalidIntegral(ec));
             }
 
@@ -147,7 +147,7 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
                 return Err(InvalidV6AddressError::invalidNumberOfParts());
             }
 
-            if (part.find('.') != Str::npos) {
+            if (part.contains('.')) {
                 if (end != range.size()) {
                     return Err(InvalidV6AddressError::invalidNumberOfParts());
                 }
@@ -155,7 +155,7 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
                 auto pair = VIOLET_TRY(parseIPv4(part));
                 target.push_back(pair.first);
                 target.push_back(pair.second);
-                return {};
+                return { };
             }
 
             UInt16 value = VIOLET_TRY(parseHextet(part));
@@ -166,7 +166,7 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
 
             start = end + 1;
         }
-        return {};
+        return { };
     };
 
     if (doubleColonPos != Str::npos) {
@@ -224,16 +224,16 @@ auto AddrV6::ToString() const noexcept -> String
         return std::format("::ffff:{}.{}.{}.{}", bytes[12], bytes[13], bytes[14], bytes[15]);
     }
 
-    Array<UInt16, 8> hextets{};
+    Array<UInt16, 8> hextets{ };
     for (Int32 i = 0; i < 8; ++i) {
         hextets[i] = (static_cast<UInt16>(this->n_bytes[i * 2]) << 8) | this->n_bytes[(i * 2) + 1];
     }
 
     Int32 bestStart = -1;
-    UInt32 bestLength = 0;
+    Int32 bestLength = 0;
 
     Int32 currStart = -1;
-    UInt32 currLength = 0;
+    Int32 currLength = 0;
 
     for (Int32 i = 0; i < 8; ++i) {
         if (hextets[i] == 0) {
@@ -266,7 +266,7 @@ auto AddrV6::ToString() const noexcept -> String
     for (Int32 i = 0; i < 8; ++i) {
         if (i == bestStart) {
             os << "::";
-            i += static_cast<Int32>(bestLength) - 1;
+            i += bestLength - 1;
 
             if (i == 7) {
                 break;

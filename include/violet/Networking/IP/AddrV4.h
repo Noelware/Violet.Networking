@@ -23,7 +23,6 @@
 
 #include <violet/Container/Optional.h>
 #include <violet/Container/Result.h>
-#include <violet/Violet.h>
 
 #include <functional>
 
@@ -353,6 +352,6 @@ template<>
 struct std::hash<violet::net::ip::AddrV4> final {
     auto operator()(const violet::net::ip::AddrV4& addr) const noexcept -> violet::UInt
     {
-        return std::hash<violet::UInt32>{}(addr.AsUInt32());
+        return std::hash<violet::UInt32>{ }(addr.AsUInt32());
     }
 };

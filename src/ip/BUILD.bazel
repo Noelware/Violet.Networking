@@ -21,6 +21,8 @@
 
 load("//bazel:cc.bzl", "violet_cc_library")
 
+exports_files(glob(["*.cc"]))
+
 violet_cc_library(
     name = "addr_v4",
     srcs = ["AddrV4.cc"],
