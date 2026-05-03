@@ -12,6 +12,7 @@ availableAt:
 ### 26.06
 - Bump **Noelware.Violet** frameworks to **26.06.01** ([`@auguwu`])
 - Rename `@crates` repository to `@violet_net_crates` so it doesn't conflict ([`@auguwu`])
+- **Bazel**: Deprecate `@violet.net//src`-based targets to `@violet.net//net` instead ([`@auguwu`])
 
 **Git History**: <https://github.com/Noelware/Violet.Networking/compare/26.03.01...26.06>
 
