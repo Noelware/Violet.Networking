@@ -21,9 +21,8 @@
 
 #pragma once
 
+#include <violet/Experimental/OneOf.h>
 #include <violet/Networking/IP/AddrV6.h>
-
-#include <variant>
 
 namespace violet::net::socket {
 
@@ -79,7 +78,7 @@ struct AddrV6 final {
 };
 
 struct ParseV6Error final {
-    auto ToString() const noexcept -> String;
+    [[nodiscard]] auto ToString() const noexcept -> String;
     friend auto operator<<(std::ostream& os, const ParseV6Error& self) noexcept -> std::ostream&
     {
         return os << self.ToString();
@@ -94,7 +93,7 @@ private:
 
         [[nodiscard]] auto ToString() const noexcept -> String
         {
-            std::error_code code(static_cast<Int32>(this->Code), std::generic_category());
+            auto code = std::make_error_code(this->Code);
             return code.message();
         }
     };
@@ -130,7 +129,10 @@ private:
         return err;
     }
 
-    std::variant<invalid_integral_t, invalid_bracket_placement_t, ip::InvalidV6AddressError> n_value;
+    using variant_type
+        = violet::experimental::OneOf<invalid_integral_t, invalid_bracket_placement_t, ip::InvalidV6AddressError>;
+
+    variant_type n_value;
 };
 
 } // namespace violet::net::socket

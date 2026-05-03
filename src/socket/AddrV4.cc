@@ -48,7 +48,7 @@ auto AddrV4::FromStr(Str input) noexcept -> Result<AddrV4, ParseV4Error>
 
     UInt64 thePort = 0;
     auto [ptr, ec] = std::from_chars(port->begin(), port->begin() + port->size(), thePort);
-    if (ec != std::errc{}) {
+    if (ec != std::errc{ }) {
         return Err(ParseV4Error::invalidIntegral(ec));
     }
 
@@ -66,13 +66,5 @@ auto AddrV4::ToString() const noexcept -> String
 
 auto ParseV4Error::ToString() const noexcept -> String
 {
-    if (std::holds_alternative<invalid_integral_t>(this->n_value)) {
-        return std::get<invalid_integral_t>(this->n_value).ToString();
-    }
-
-    if (std::holds_alternative<ip::InvalidV4AddressError>(this->n_value)) {
-        return std::get<ip::InvalidV4AddressError>(this->n_value).ToString();
-    }
-
-    VIOLET_UNREACHABLE();
+    return this->n_value.Visit([](const auto& value) -> String { return value.ToString(); });
 }
