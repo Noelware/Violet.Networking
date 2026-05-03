@@ -25,5 +25,8 @@ cc_binary(
     name = "cpp",
     srcs = ["main.cc"],
     visibility = ["//visibility:public"],
-    deps = ["//src:url"],
+    deps = [
+        "//src:url",
+        "@violet//violet:print",
+    ],
 )

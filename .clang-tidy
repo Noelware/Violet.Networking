@@ -53,7 +53,8 @@ Checks: >
   -cppcoreguidelines-avoid-do-while,
   -readability-use-anyofallof,
   -cppcoreguidelines-pro-type-reinterpret-cast,
-  -google-objc-function-naming
+  -google-objc-function-naming,
+  -google-default-arguments
 
 CheckOptions:
   - {

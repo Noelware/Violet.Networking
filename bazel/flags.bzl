@@ -20,35 +20,31 @@
 # SOFTWARE.
 
 STRING_FLAGS = {
-    # ## `--@violet.net//bazel/flags:http_client_transport=[curl|winhttp|none]`
-    # Determines the backend for the `violet::net::HttpClient` C++ struct. By default,
-    # it'll use `libcurl` as that is majorily supported on all platforms but there is
-    # a WinHTTP transport for Windows users.
-    #
-    # You can set this to `none` and build your own HTTP transport as you wish, you can
-    # view a reference at in the `src/http/backends/cURL.cc` file.
-    "http_client_transport": ["curl", "winhttp", "none"],
+    "http_client_transport": {
+        "default": "curl",
+        "doc": "Determines the backend for `violet::net::http::Client`. By default, it'll use `libcurl` as it is majorily supported on all platforms.",
+        "values": ["curl", "winhttp", "none"],
+    },
 }
 
-BOOL_FLAGS = [
-    # ## `--@violet.net//bazel/flags:ubsan=[True|False]`
-    # Enables the Undefined Behaviour Sanitizer that is used to catch
-    # undefined behaviour mistakes. Because, you know, I am not the
-    # sharpest tool in the shed.
-    "ubsan",
+BOOL_FLAGS = {
+    "asan": {
+        "default": False,
+        "doc": "Enables the **Address** Sanitizer on each C++ target. Usually, this is meant for Bazel workspaces that don't provide custom C++ toolchain definitions.",
+    },
+    "msan": {
+        "default": False,
+        "doc": """Enables the **Memory** Sanitizer on each C++ target. Usually, this is meant for Bazel workspaces that don't provide custom C++ toolchain definitions.
 
-    # ## `--@violet.net//bazel/flags:tsan=[True|False]`
-    # Enables the Thread Sanitizer that is used to catch thread-like mistakes. Because, you know,
-    # I am not the sharpest tool in the shed.
-    "tsan",
-
-    # ## `--@violet.net//bazel/flags:msan=[True|False]`
-    # Enables the Memory Sanitizer that is used to catch memory mistakes. Because, you know,
-    # I am not the sharpest tool in the shed.
-    "msan",
-
-    # ## `--@violet.net//bazel/flags:asan=[True|False]`
-    # Enables the Address Sanitizer that is used to catch mistakes. Because, you know,
-    # I am not the sharpest tool in the shed.
-    "asan",
-]
+        When invoked on `cc_test`s, the C++ standard library implementation will require to be compiled with MemorySanitizer. This will always fail in libstdc++, but libc++
+        has MSan support, but you will need to compile it yourself; default toolchains of libc++ don't compile with MSan by default.""",
+    },
+    "tsan": {
+        "default": False,
+        "doc": "Enables the **Thread** Sanitizer on each C++ target. Usually, this is meant for Bazel workspaces that don't provide custom C++ toolchain definitions.",
+    },
+    "ubsan": {
+        "default": False,
+        "doc": "Enables the **Undefined Behaviour** Sanitizer on each C++ target. Usually, this is meant for Bazel workspaces that don't provide custom C++ toolchain definitions.",
+    },
+}

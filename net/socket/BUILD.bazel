@@ -19,16 +19,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-load("//bazel:cc.bzl", "cc_test")
+load("//bazel:cc.bzl", "violet_cc_library")
 
-cc_test(
-    name = "body",
-    srcs = ["Body.test.cc"],
-    deps = ["//src/http:body"],
+package(
+    default_visibility = ["//visibility:public"],
 )
 
-cc_test(
-    name = "headers",
-    srcs = ["Headers.test.cc"],
-    deps = ["//src/http:headers"],
+violet_cc_library(
+    name = "addr_v4",
+    srcs = ["//src/socket:AddrV4.cc"],
+    hdrs = ["//include/violet/Networking/Socket:AddrV4.h"],
+    deps = [
+        "//src/ip:addr_v4",
+        "@violet//violet/experimental:oneof",
+    ],
+)
+
+violet_cc_library(
+    name = "addr_v6",
+    srcs = ["AddrV6.cc"],
+    hdrs = ["//include/violet/Networking/Socket:AddrV6.h"],
+    deps = [
+        "//src/ip:addr_v6",
+        "@violet//violet/experimental:oneof",
+    ],
 )

@@ -28,14 +28,15 @@ single_version_override(
 
 bazel_dep(name = "zlib", version = "1.3.2")
 bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
+bazel_dep(name = "brotli", version = "1.2.0.bcr.1")
 bazel_dep(name = "abseil-cpp", version = "20260107.1", repo_name = "absl")
-bazel_dep(name = "violet", version = "26.05.01")
+bazel_dep(name = "violet", version = "26.06.01")
 archive_override(
     module_name = "violet",
-    integrity = "sha256-akdqERBZHgYmSg+Vk5cJeoeN81HkkWVHQuF1mFikxzY=",
+    integrity = "sha256-usY8gpBnrQouFn/y3MdASeltZ7HULsnQcZ9ymwAjZBY=",
     urls = [
-        # "https://artifacts.noelware.org/bazel-registry/violet/26.05.01/bazeldist.tgz",
-        "https://github.com/Noelware/violet/releases/download/26.05.01/bazeldist.tgz",
+        # "https://artifacts.noelware.org/bazel-registry/violet/26.06.01/bazeldist.tgz",
+        "https://github.com/Noelware/violet/releases/download/26.06.01/bazeldist.tgz",
     ],
 )
 

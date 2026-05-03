@@ -22,10 +22,9 @@
 #include <gtest/gtest.h>
 #include <violet/Networking/Socket/AddrV4.h>
 
-// NOLINTBEGIN(google-build-using-namespace)
+// NOLINTBEGIN(google-build-using-namespace,readability-identifier-length)
 using namespace violet::net;
 using namespace violet;
-// NOLINTEND(google-build-using-namespace)
 
 TEST(SocketAddrV4, ConstructAndAccess)
 {
@@ -69,13 +68,13 @@ TEST(SocketAddrV4, Comparison)
     ip::AddrV4 ip1(10, 0, 0, 1);
     ip::AddrV4 ip2(10, 0, 0, 2);
 
-    // NOLINTBEGIN(readability-identifier-length)
     socket::AddrV4 a(ip1, 80);
     socket::AddrV4 b(ip1, 443);
     socket::AddrV4 c(ip2, 80);
-    // NOLINTEND(readability-identifier-length)
 
     EXPECT_TRUE(a < b); // port difference
     EXPECT_TRUE(b < c); // IP difference
     EXPECT_TRUE(c > a);
 }
+
+// NOLINTEND(google-build-using-namespace,readability-identifier-length)

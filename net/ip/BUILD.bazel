@@ -19,4 +19,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-exports_files(glob(["*.h"]))
+load("//bazel:cc.bzl", "violet_cc_library")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+violet_cc_library(
+    name = "addr_v4",
+    srcs = ["AddrV4.cc"],
+    hdrs = ["//include/violet/Networking/IP:AddrV4.h"],
+    deps = [
+        "@violet//violet",
+        "@violet//violet/container",
+    ],
+)
+
+violet_cc_library(
+    name = "addr_v6",
+    srcs = ["AddrV6.cc"],
+    hdrs = ["//include/violet/Networking/IP:AddrV6.h"],
+    deps = [
+        "@absl//absl/numeric:int128",
+        "@violet//violet",
+        "@violet//violet/container",
+    ],
+)

@@ -23,7 +23,6 @@
 
 #include <violet/Container/Result.h>
 #include <violet/Networking/IP/AddrV4.h>
-#include <violet/Violet.h>
 
 #include <variant>
 
@@ -32,7 +31,7 @@ namespace violet::net::socket {
 struct ParseV4Error;
 
 struct AddrV4 final {
-    ip::AddrV4 Address{};
+    ip::AddrV4 Address{ };
     UInt16 Port = 0;
 
     constexpr VIOLET_IMPLICIT AddrV4() noexcept = default;

@@ -24,12 +24,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const char* str_view_as_cstr(violet_net_string_view data)
+// NOLINTBEGIN(readability-implicit-bool-conversion)
+
+static const char* str_view_as_cstr(violet_net_string_view data)
 {
     return data.data;
 }
 
-const char* opt_str_view_as_cstr(violet_net_optional_string_view opt)
+static const char* opt_str_view_as_cstr(violet_net_optional_string_view opt)
 {
     if (!opt.something) {
         return "<nothing>";
@@ -38,7 +40,7 @@ const char* opt_str_view_as_cstr(violet_net_optional_string_view opt)
     return str_view_as_cstr(opt.data);
 }
 
-void print_url(const violet_net_url_t* url)
+static void print_url(const violet_net_url_t* url)
 {
     violet_net_optional_uint16 port = violet_net_url_port(url);
     violet_net_optional_uint16 port_or_known = violet_net_url_port_or_known_default(url);
@@ -90,3 +92,5 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+// NOLINTEND(readability-implicit-bool-conversion)

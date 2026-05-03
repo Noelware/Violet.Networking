@@ -19,12 +19,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-load("//bazel:cc.bzl", "cc_library")
+load("//bazel:cc.bzl", "violet_cc_library")
 
-cc_library(
+exports_files(glob(["*.cc"]))
+
+violet_cc_library(
     name = "addr_v4",
     srcs = ["AddrV4.cc"],
     hdrs = ["//include/violet/Networking/Socket:AddrV4.h"],
+    deprecation = "As of 26.06, all targets have moved to `@violet.net//net/socket`, e.g., `@violet.net//net/ip:addr_v4`. This will be removed in a 26.08 release.",
     visibility = ["//visibility:public"],
     deps = [
         "//src/ip:addr_v4",
@@ -34,10 +37,11 @@ cc_library(
     ],
 )
 
-cc_library(
+violet_cc_library(
     name = "addr_v6",
     srcs = ["AddrV6.cc"],
     hdrs = ["//include/violet/Networking/Socket:AddrV6.h"],
+    deprecation = "As of 26.06, all targets have moved to `@violet.net//net/socket`, e.g., `@violet.net//net/ip:addr_v6`. This will be removed in a 26.08 release.",
     visibility = ["//visibility:public"],
     deps = [
         "//src/ip:addr_v6",

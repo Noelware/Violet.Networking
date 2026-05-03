@@ -20,8 +20,7 @@
 // SOFTWARE.
 
 #include <violet/Networking/URL.h>
-
-#include <print>
+#include <violet/Print.h>
 
 // NOLINTBEGIN(google-build-using-namespace)
 using namespace violet;
@@ -30,39 +29,22 @@ using namespace violet::net;
 
 namespace {
 
-#if VIOLET_REQUIRE_STL(202302L)
-using std::println;
-#define eprintln(...) ::println(std::cerr, ##__VA_ARGS__)
-#else
-template<typename... Args>
-void println(std::format_string<Args...> fmt, Args&&... args)
-{
-    std::cout << std::format(fmt, VIOLET_FWD(Args, args)...) << '\n';
-}
-
-template<typename... Args>
-void eprintln(std::format_string<Args...> fmt, Args&&... args)
-{
-    std::cerr << std::format(fmt, VIOLET_FWD(Args, args)...) << '\n';
-}
-#endif
-
 void printUrl(violet::net::Url& url) noexcept
 {
-    println("=+= URL: {} =+=", url.ToString());
-    println("|> Scheme:         {}", url.Scheme());
-    println("|> Special Scheme: {}", url.Special() ? "yes" : "no");
-    println("|> Has Authority:  {}", url.HasAuthority() ? "yes" : "no");
-    println("|> Authority:      {}", url.Authority());
-    println("|> Username:       {}", url.Username());
-    println("|> Password:       {}", url.Password());
-    println("|> Has Host:       {}", url.HasHost() ? "yes" : "no");
-    println("|> Domain:         {}", url.Domain());
-    println("|> Path:           {}", url.Path());
-    println("|> Query:          {}", url.Query());
-    println("|> Fragment:       {}", url.Fragment());
-    println("|> Port:           {}", url.Port());
-    println("|> Port or Known:  {}", url.PortOrKnownDefault());
+    violet::Println("=+= URL: {} =+=", url.ToString());
+    violet::Println("|> Scheme:         {}", url.Scheme());
+    violet::Println("|> Special Scheme: {}", url.Special() ? "yes" : "no");
+    violet::Println("|> Has Authority:  {}", url.HasAuthority() ? "yes" : "no");
+    violet::Println("|> Authority:      {}", url.Authority());
+    violet::Println("|> Username:       {}", url.Username());
+    violet::Println("|> Password:       {}", url.Password());
+    violet::Println("|> Has Host:       {}", url.HasHost() ? "yes" : "no");
+    violet::Println("|> Domain:         {}", url.Domain());
+    violet::Println("|> Path:           {}", url.Path());
+    violet::Println("|> Query:          {}", url.Query());
+    violet::Println("|> Fragment:       {}", url.Fragment());
+    violet::Println("|> Port:           {}", url.Port());
+    violet::Println("|> Port or Known:  {}", url.PortOrKnownDefault());
 }
 
 } // namespace
@@ -76,7 +58,7 @@ auto main(int argc, char** argv) -> int
 
     auto uri = Url::Parse(url);
     if (uri.Err()) {
-        eprintln("failed to parse url `{}`: {}", url, uri.Error());
+        violet::PrintErrln("failed to parse url `{}`: {}", url, uri.Error());
         return 1;
     }
 
@@ -85,7 +67,7 @@ auto main(int argc, char** argv) -> int
     Array<const char*, 2> params = { "hello=world", "fluff=true" };
     auto uriWithParams = Url::ParseWithParams(url, params);
     if (uriWithParams.Err()) {
-        eprintln("failed to parse url `{}`: {}", url, uriWithParams.Error());
+        violet::PrintErrln("failed to parse url `{}`: {}", url, uriWithParams.Error());
         return 1;
     }
 

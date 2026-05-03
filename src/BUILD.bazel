@@ -19,26 +19,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-load("//bazel:cc.bzl", "cc_library")
+load("//bazel:cc.bzl", "violet_cc_library")
 
-cc_library(
+exports_files(glob(["*.cc"]))
+
+violet_cc_library(
     name = "runtime_info",
     hdrs = ["//include/violet/Networking/Runtime:Info.h"],
+    deprecation = "As of 26.06, all targets have moved to `@violet.net//net`, e.g., `@violet.net//net:runtime_info`. This will be removed in a 26.08 release.",
     visibility = ["//visibility:public"],
     deps = ["@violet//violet:policy_checks"],
 )
 
-cc_library(
+violet_cc_library(
     name = "url_c",
     hdrs = ["//include/violet-c/net:url.h"],
+    deprecation = "As of 26.06, all targets have moved to `@violet.net//net`, e.g., `@violet.net//net:url_c`. This will be removed in a 26.08 release.",
     visibility = ["//visibility:public"],
     deps = ["//rust/url"],
 )
 
-cc_library(
+violet_cc_library(
     name = "url",
     srcs = ["Url.cc"],
     hdrs = ["//include/violet/Networking:URL.h"],
+    deprecation = "As of 26.06, all targets have moved to `@violet.net//net`, e.g., `@violet.net//net:url`. This will be removed in a 26.08 release.",
     visibility = ["//visibility:public"],
     deps = [
         ":url_c",
@@ -47,10 +52,11 @@ cc_library(
     ],
 )
 
-cc_library(
+violet_cc_library(
     name = "ip_address",
     srcs = ["IPAddress.cc"],
     hdrs = ["//include/violet/Networking:IPAddress.h"],
+    deprecation = "As of 26.06, all targets have moved to `@violet.net//net`, e.g., `@violet.net//net:ip_address`. This will be removed in a 26.08 release.",
     visibility = ["//visibility:public"],
     deps = [
         "//src/ip:addr_v4",
@@ -59,10 +65,11 @@ cc_library(
     ],
 )
 
-cc_library(
+violet_cc_library(
     name = "socket_address",
     srcs = ["SocketAddress.cc"],
     hdrs = ["//include/violet/Networking:SocketAddress.h"],
+    deprecation = "As of 26.06, all targets have moved to `@violet.net//net`, e.g., `@violet.net//net:socket_address`. This will be removed in a 26.08 release.",
     visibility = ["//visibility:public"],
     deps = [
         "//src/socket:addr_v4",

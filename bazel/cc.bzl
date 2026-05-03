@@ -19,95 +19,53 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-load("@rules_cc//cc:defs.bzl", cc_library_ = "cc_library", cc_test_ = "cc_test")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("//bazel:cc/defs.bzl", "sanitizer", violet_copts = "copts", violet_defines = "defines")
 load(":version.bzl", "DEVBUILD", "encode_as_int")
 
-SANITIZER_OPTS = select({
-    "//bazel/flags:asan_enabled": ["-fsanitize=address"],
-    "//bazel/flags:msan_enabled": ["-fsanitize=memory"],
-    "//bazel/flags:tsan_enabled": ["-fsanitize=thread"],
-    "//bazel/flags:ubsan_enabled": ["-fsanitize=undefined"],
-    "//conditions:default": [],
-})
+def violet_cc_library(
+        name,
+        deps = [],
+        local_defines = [],
+        defines = [],
+        copts = [],
+        linkopts = [],
+        **kwargs):
+    if "includes" in kwargs:
+        fail("`includes` in `violet_cc_library`(%s) is not allowed" % name)
 
-MSAN_OPTS = []
-UBSAN_OPTS = ["print_summary=1", "print_stacktrace=1"]
-ASAN_OPTS = ["print_summary=1"]
-TSAN_OPTS = ["print_summary=1"]
-
-SANITIZER_ENV = select({
-    "//bazel/flags:ubsan_enabled": {"UBSAN_OPTIONS": ":".join(UBSAN_OPTS)},
-    "//conditions:default": {},
-}) | select({
-    "//bazel/flags:asan_enabled": {"ASAN_OPTIONS": ":".join(ASAN_OPTS)},
-    "//conditions:default": {},
-}) | select({
-    "//bazel/flags:tsan_enabled": {"TSAN_OPTIONS": ":".join(TSAN_OPTS)},
-    "//conditions:default": {},
-}) | select({
-    "//bazel/flags:tsan_enabled": {"MSAN_OPTIONS": ":".join(MSAN_OPTS)},
-    "//conditions:default": {},
-})
-
-COMPILER_COPTS = select({
-    "@rules_cc//cc/compiler:clang": ["-DNOMINMAX"],
-    "@rules_cc//cc/compiler:clang-cl": ["-DNOMINMAX"],
-    "@rules_cc//cc/compiler:gcc": ["-DNOMINMAX"],
-    "@rules_cc//cc/compiler:msvc-cl": ["/DNOMINMAX", "/DWIN32_LEAN_AND_MEAN"],
-    "//conditions:default": [],
-})
-
-def cc_library(name, hdrs = [], **kwargs):
-    copts = kwargs.pop("copts", [])
-    linkopts = kwargs.pop("linkopts", [])
-
-    deps = kwargs.pop("deps", [])
-
-    # buildifier: disable=list-append
-    deps += ["//:include_hack"]
-
-    # Remove `includes` from any `cc_library` definition.
-    # buildifier: disable=unused-variable
-    _ = kwargs.pop("includes", [])
-
-    return cc_library_(
+    return cc_library(
         name = name,
-        hdrs = hdrs,
-        copts = copts + SANITIZER_OPTS + COMPILER_COPTS,
-        linkopts = linkopts + SANITIZER_OPTS,
-        includes = ["include"],
-        defines = ["BAZEL"] + [
-            "VIOLET_NET_VERSION=%d" % encode_as_int(),
-            "VIOLET_NET_DEVBUILD=%d" % (1 if DEVBUILD else 0),
+        deps = ["//:include_hack"] + deps,
+        copts = violet_copts + sanitizer["copts"] + copts,
+        linkopts = sanitizer["linkopts"] + linkopts,
+        local_defines = local_defines + ["VIOLET_NET_BUILDING"],
+        defines = violet_defines + defines + [
+            ("VIOLET_NET_VERSION=%d" % encode_as_int()),
+            ("VIOLET_NET_DEVBUILD=%d" % (1 if DEVBUILD else 0)),
         ],
-        deps = deps,
         **kwargs
     )
 
-def cc_test(name, with_gtest_main = True, **kwargs):
-    deps = kwargs.pop("deps", [])
-    deps.append("@googletest//:gtest")
+def violet_cc_test(
+        name,
+        with_gtest_main = True,
+        deps = [],
+        copts = [],
+        linkopts = [],
+        env = {},
+        size = "small",
+        **kwargs):
+    if "visibility" in kwargs:
+        fail("`visibility` in `violet_cc_test`(%s) is not allowed" % name)
 
-    if with_gtest_main:
-        deps.append("@googletest//:gtest_main")
-
-    # remove `visibility` in `cc_test` and make them private
-    kwargs.pop("visibility", [])
-
-    # set `size` if it is not defined
-    size = kwargs.pop("size", "small")
-
-    copts = kwargs.pop("copts", [])
-    linkopts = kwargs.pop("linkopts", [])
-    env = kwargs.pop("env", {})
-
-    return cc_test_(
+    return cc_test(
         name = name,
-        deps = deps,
-        copts = copts + SANITIZER_OPTS,
-        linkopts = linkopts + SANITIZER_OPTS,
-        env = env | SANITIZER_ENV,
-        visibility = ["//visibility:private"],
+        deps = deps + ["@googletest//:gtest"] + (["@googletest//:gtest_main"] if with_gtest_main else []),
+        copts = copts + sanitizer["copts"],
+        linkopts = linkopts + sanitizer["linkopts"],
+        env = env | sanitizer["env"],
+        visibility = ["//visibility:public"],
         size = size,
         **kwargs
     )

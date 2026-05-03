@@ -19,20 +19,53 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-load("//bazel:cc.bzl", "cc_library")
+load("//bazel:cc.bzl", "violet_cc_library")
 
-exports_files(
-    glob(["*.cc"]),
-    visibility = ["//src/http:__subpackages__"],
+package(
+    default_visibility = ["//visibility:public"],
 )
 
-cc_library(
-    name = "global",
-    srcs = ["Global.cc"],
-    hdrs = ["//include/violet/Networking/HTTP/cURL:Global.h"],
-    visibility = ["//visibility:public"],
+violet_cc_library(
+    name = "runtime_info",
+    hdrs = ["//include/violet/Networking/Runtime:Info.h"],
+    deps = ["@violet//violet:policy_checks"],
+)
+
+violet_cc_library(
+    name = "url_c",
+    hdrs = ["//include/violet-c/net:url.h"],
+    deps = ["//rust/url"],
+)
+
+violet_cc_library(
+    name = "url",
+    srcs = ["//src:Url.cc"],
+    hdrs = ["//include/violet/Networking:URL.h"],
     deps = [
-        "@curl",
-        "@violet//violet:macros",
+        ":url_c",
+        "@violet//violet",
+        "@violet//violet/container",
+    ],
+)
+
+violet_cc_library(
+    name = "ip_address",
+    srcs = ["//src:IPAddress.cc"],
+    hdrs = ["//include/violet/Networking:IPAddress.h"],
+    deps = [
+        "//net/ip:addr_v4",
+        "//net/ip:addr_v6",
+        "@violet//violet",
+    ],
+)
+
+violet_cc_library(
+    name = "socket_address",
+    srcs = ["//src:SocketAddress.cc"],
+    hdrs = ["//include/violet/Networking:SocketAddress.h"],
+    deps = [
+        "//net/socket:addr_v4",
+        "//net/socket:addr_v6",
+        "@violet//violet",
     ],
 )

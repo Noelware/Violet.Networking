@@ -22,7 +22,6 @@
 #pragma once
 
 #include <violet/Networking/IP/AddrV6.h>
-#include <violet/Violet.h>
 
 #include <variant>
 
@@ -126,7 +125,7 @@ private:
     constexpr static auto invalidBracketPlacement() -> ParseV6Error
     {
         ParseV6Error err;
-        err.n_value = invalid_bracket_placement_t{};
+        err.n_value = invalid_bracket_placement_t{ };
 
         return err;
     }

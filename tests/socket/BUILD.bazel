@@ -19,15 +19,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-load("//bazel:cc.bzl", "cc_test")
+load("//bazel:cc.bzl", "violet_cc_test")
 
-cc_test(
+violet_cc_test(
     name = "addr_v4",
     srcs = ["AddrV4.test.cc"],
     deps = ["//src/socket:addr_v4"],
 )
 
-cc_test(
+violet_cc_test(
     name = "addr_v6",
     srcs = ["AddrV6.test.cc"],
     deps = ["//src/socket:addr_v6"],
