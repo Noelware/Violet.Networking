@@ -24,7 +24,16 @@ module(
     repo_name = "org_noelware_violet_net",
 )
 
+## ~^=w=^~ START: Bazel Modules ~^=w=^~ ##
 include("//bazel/deps:bzl.MODULE.bazel")
+## ~^=w=^~ END: Bazel Modules ~^=w=^~ ##
+
+## ~^=w=^~ START: C++ ~^=w=^~ ##
 include("//bazel/deps:cc.MODULE.bazel")
+## ~^=w=^~ END: C++ ~^=w=^~ ##
+
+## ~^=w=^~ START: Rust ~^=w=^~ ##
 include("//bazel/deps:rust.MODULE.bazel")
+## ~^=w=^~ START: Rust ~^=w=^~ ##
+
 include("//bazel/deps:dev.MODULE.bazel")

@@ -90,7 +90,6 @@ cat <<EOF > "$SCRIPT_DIR/.bazeldist/MODULE.bazel"
 module(
     name = "violet.net",
     version = "$VERSION",
-    compatibility_level = 0,
     repo_name = "org_noelware_violet_net",
 )
 
@@ -112,8 +111,8 @@ for depfile in "${deps[@]}"; do
 done
 
 awk '
-  /^load\("@hedron_compile_commands\/\// { next }
-  /^refresh_compile_commands\(/ { s=1 }
+  /^load\("@minato\/\// { next }
+  /^minato\(/ { s=1 }
   s && /^\)/ { s=0; next }
   !s
 ' "$SCRIPT_DIR/BUILD.bazel" > "$SCRIPT_DIR/.bazeldist/BUILD.bazel"
