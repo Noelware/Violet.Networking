@@ -49,7 +49,7 @@ struct SocketAddress final {
         V6
     };
 
-    constexpr static auto V4(socket::AddrV4 address) noexcept -> SocketAddress
+    static auto V4(socket::AddrV4 address) noexcept -> SocketAddress
     {
         SocketAddress addr;
         addr.n_value = address;
@@ -57,7 +57,7 @@ struct SocketAddress final {
         return addr;
     }
 
-    constexpr static auto V6(socket::AddrV6 address) noexcept -> SocketAddress
+    static auto V6(socket::AddrV6 address) noexcept -> SocketAddress
     {
         SocketAddress addr;
         addr.n_value = address;
@@ -133,7 +133,7 @@ struct SocketAddress final {
     }
 
 private:
-    constexpr VIOLET_IMPLICIT SocketAddress() noexcept = default;
+    VIOLET_IMPLICIT SocketAddress() noexcept = default;
 
     using variant_type = violet::experimental::OneOf<socket::AddrV4, socket::AddrV6>;
 

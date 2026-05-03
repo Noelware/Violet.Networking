@@ -49,7 +49,7 @@ struct IPAddress final {
         V6
     };
 
-    constexpr static auto V4(ip::AddrV4 address) noexcept -> IPAddress
+    static auto V4(ip::AddrV4 address) noexcept -> IPAddress
     {
         IPAddress addr;
         addr.n_value = address;
@@ -57,7 +57,7 @@ struct IPAddress final {
         return addr;
     }
 
-    constexpr static auto V6(ip::AddrV6 address) noexcept -> IPAddress
+    static auto V6(ip::AddrV6 address) noexcept -> IPAddress
     {
         IPAddress addr;
         addr.n_value = address;
@@ -110,17 +110,17 @@ struct IPAddress final {
         return this->AsV6Unchecked(Unsafe("either checked in debug mode or doesn't care in release builds"));
     }
 
-    constexpr friend auto operator==(const IPAddress& self, const IPAddress& other) noexcept -> bool
+    friend auto operator==(const IPAddress& self, const IPAddress& other) noexcept -> bool
     {
         return self.n_value == other.n_value;
     }
 
-    constexpr friend auto operator!=(const IPAddress& self, const IPAddress& other) noexcept -> bool
+    friend auto operator!=(const IPAddress& self, const IPAddress& other) noexcept -> bool
     {
         return !(self == other);
     }
 
-    constexpr friend auto operator<=>(const IPAddress& self, const IPAddress& other) noexcept -> std::strong_ordering
+    friend auto operator<=>(const IPAddress& self, const IPAddress& other) noexcept -> std::strong_ordering
     {
         if (auto cmp = self.n_value.Index() <=> other.n_value.Index(); cmp != 0) {
             return cmp;
@@ -133,7 +133,7 @@ struct IPAddress final {
     }
 
 private:
-    constexpr VIOLET_IMPLICIT IPAddress() noexcept = default;
+    VIOLET_IMPLICIT IPAddress() noexcept = default;
 
     using variant_type = violet::experimental::OneOf<ip::AddrV4, ip::AddrV6>;
 

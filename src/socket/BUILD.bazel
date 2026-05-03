@@ -34,6 +34,7 @@ violet_cc_library(
         "@violet//violet",
         "@violet//violet:strings",
         "@violet//violet/container",
+        "@violet//violet/experimental:oneof",
     ],
 )
 
@@ -49,5 +50,6 @@ violet_cc_library(
         "@violet//violet",
         "@violet//violet:strings",
         "@violet//violet/container",
+        "@violet//violet/experimental:oneof",
     ],
 )

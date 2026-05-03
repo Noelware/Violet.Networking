@@ -147,7 +147,11 @@ auto AddrV6::FromStr(Str input) noexcept -> Result<AddrV6, InvalidV6AddressError
                 return Err(InvalidV6AddressError::invalidNumberOfParts());
             }
 
+#if VIOLET_REQUIRE_STL(202302L)
             if (part.contains('.')) {
+#else
+            if (part.find('.') != Str::npos) {
+#endif
                 if (end != range.size()) {
                     return Err(InvalidV6AddressError::invalidNumberOfParts());
                 }

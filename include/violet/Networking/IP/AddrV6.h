@@ -274,7 +274,7 @@ private:
     {
         InvalidV6AddressError error;
         error.n_kind = kind_t::kFailedIntegralParsing;
-        error.n_errorCode = Some<std::error_code>(static_cast<Int32>(code), std::generic_category());
+        error.n_errorCode = std::make_error_code(code);
 
         return error;
     }

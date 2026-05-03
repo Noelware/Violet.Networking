@@ -57,17 +57,17 @@ struct AddrV6 final {
         return os << self.ToString();
     }
 
-    constexpr friend auto operator==(const AddrV6& lhs, const AddrV6& rhs) noexcept -> bool
+    friend auto operator==(const AddrV6& lhs, const AddrV6& rhs) noexcept -> bool
     {
         return lhs.Address == rhs.Address && lhs.Port == rhs.Port;
     }
 
-    constexpr friend auto operator!=(const AddrV6& lhs, const AddrV6& rhs) noexcept -> bool
+    friend auto operator!=(const AddrV6& lhs, const AddrV6& rhs) noexcept -> bool
     {
         return !(lhs == rhs);
     }
 
-    constexpr friend auto operator<=>(const AddrV6& lhs, const AddrV6& rhs) noexcept -> std::strong_ordering
+    friend auto operator<=>(const AddrV6& lhs, const AddrV6& rhs) noexcept -> std::strong_ordering
     {
         if (auto cmp = lhs.Address <=> rhs.Address; cmp != 0) {
             return cmp;
@@ -86,7 +86,8 @@ struct ParseV6Error final {
 
 private:
     friend auto AddrV6::FromStr(Str) noexcept -> Result<AddrV6, ParseV6Error>;
-    constexpr VIOLET_IMPLICIT ParseV6Error() noexcept = default;
+
+    VIOLET_IMPLICIT ParseV6Error() noexcept = default;
 
     struct invalid_integral_t final {
         std::errc Code;
@@ -105,7 +106,7 @@ private:
         }
     };
 
-    constexpr static auto invalidIntegral(std::errc code) noexcept -> ParseV6Error
+    static auto invalidIntegral(std::errc code) noexcept -> ParseV6Error
     {
         ParseV6Error error;
         error.n_value = invalid_integral_t{ .Code = code };
@@ -113,7 +114,7 @@ private:
         return error;
     }
 
-    constexpr static auto invalidAddress(ip::InvalidV6AddressError&& error) noexcept -> ParseV6Error
+    static auto invalidAddress(ip::InvalidV6AddressError&& error) noexcept -> ParseV6Error
     {
         ParseV6Error err;
         err.n_value = VIOLET_MOVE(error);
@@ -121,7 +122,7 @@ private:
         return err;
     }
 
-    constexpr static auto invalidBracketPlacement() -> ParseV6Error
+    static auto invalidBracketPlacement() -> ParseV6Error
     {
         ParseV6Error err;
         err.n_value = invalid_bracket_placement_t{ };

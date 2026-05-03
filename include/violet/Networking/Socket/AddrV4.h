@@ -60,17 +60,17 @@ struct AddrV4 final {
         return os << self.ToString();
     }
 
-    constexpr friend auto operator==(const AddrV4& lhs, const AddrV4& rhs) noexcept -> bool
+    friend auto operator==(const AddrV4& lhs, const AddrV4& rhs) noexcept -> bool
     {
         return lhs.Address == rhs.Address && lhs.Port == rhs.Port;
     }
 
-    constexpr friend auto operator!=(const AddrV4& lhs, const AddrV4& rhs) noexcept -> bool
+    friend auto operator!=(const AddrV4& lhs, const AddrV4& rhs) noexcept -> bool
     {
         return !(lhs == rhs);
     }
 
-    constexpr friend auto operator<=>(const AddrV4& lhs, const AddrV4& rhs) noexcept -> std::strong_ordering
+    friend auto operator<=>(const AddrV4& lhs, const AddrV4& rhs) noexcept -> std::strong_ordering
     {
         if (auto cmp = lhs.Address <=> rhs.Address; cmp != 0) {
             return cmp;
@@ -90,7 +90,7 @@ struct ParseV4Error final {
 private:
     friend auto AddrV4::FromStr(Str) noexcept -> Result<AddrV4, ParseV4Error>;
 
-    constexpr VIOLET_IMPLICIT ParseV4Error() noexcept = default;
+    VIOLET_IMPLICIT ParseV4Error() noexcept = default;
 
     struct invalid_integral_t final {
         std::errc Code;
@@ -102,7 +102,7 @@ private:
         }
     };
 
-    constexpr static auto invalidIntegral(std::errc code) noexcept -> ParseV4Error
+    static auto invalidIntegral(std::errc code) noexcept -> ParseV4Error
     {
         ParseV4Error error;
         error.n_value = invalid_integral_t{ .Code = code };
@@ -110,7 +110,7 @@ private:
         return error;
     }
 
-    constexpr static auto invalidAddress(ip::InvalidV4AddressError&& error) noexcept -> ParseV4Error
+    static auto invalidAddress(ip::InvalidV4AddressError&& error) noexcept -> ParseV4Error
     {
         ParseV4Error err;
         err.n_value = VIOLET_MOVE(error);
