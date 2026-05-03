@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <functional> // IWYU pragma: export -- TODO(@auguwu/Noel): Add this header in `Result.h`
+
 #include <violet/Container/Result.h>
 #include <violet/Experimental/OneOf.h>
 #include <violet/Networking/IP/AddrV4.h>
