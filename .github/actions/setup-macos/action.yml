@@ -33,7 +33,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/cache@v5
+    - uses: actions/cache@v6
       with:
         key: homebrew-llvm${{inputs.llvm-version}}-${{hashFiles('.github/actions/setup-macos/action.yml')}}
         restore-keys: homebrew-llvm${{inputs.llvm-version}}
