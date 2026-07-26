@@ -34,7 +34,7 @@ jobs:
             # TODO(@auguwu/Noel): switch to `cr.noelware.cloud/private/ci/base` once available
             image: ghcr.io/noelware/violet/ci:clang-21
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
             - run: ./tools/bazeldist
             - id: integrity
               run: |
