@@ -28,7 +28,7 @@ single_version_override(
 
 bazel_dep(name = "zlib", version = "1.3.2")
 bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
-bazel_dep(name = "brotli", version = "1.2.0.bcr.1")
+bazel_dep(name = "brotli", version = "1.2.0.bcr.2")
 bazel_dep(name = "abseil-cpp", version = "20260526.0", repo_name = "absl")
 bazel_dep(name = "violet", version = "26.06.01")
 archive_override(
