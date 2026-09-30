@@ -20,7 +20,7 @@
 # SOFTWARE.
 
 [toolchain]
-channel = "nightly-2026-09-29"
+channel = "nightly-2026-09-30"
 profile = "minimal"
 components = [
     "rustc",
