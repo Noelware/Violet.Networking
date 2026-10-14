@@ -81,7 +81,7 @@ jobs:
             CC: "clang-22"
         steps:
             - uses: actions/checkout@v7
-            - uses: bazel-contrib/setup-bazel@0.19.0
+            - uses: bazel-contrib/setup-bazel@0.19.1
               with:
                 bazelisk-cache: true # avoid installing Bazel each time
                 repository-cache: true # cache repositories in `MODULE.bazel`
@@ -132,7 +132,7 @@ jobs:
             CC: ${{matrix.cc}}
         steps:
             - uses: actions/checkout@v7
-            - uses: bazel-contrib/setup-bazel@0.19.0
+            - uses: bazel-contrib/setup-bazel@0.19.1
               with:
                 bazelisk-cache: true # avoid installing Bazel each time
                 repository-cache: true # cache repositories in `MODULE.bazel`
@@ -185,7 +185,7 @@ jobs:
             CC: ${{matrix.cc}}
         steps:
             - uses: actions/checkout@v7
-            - uses: bazel-contrib/setup-bazel@0.19.0
+            - uses: bazel-contrib/setup-bazel@0.19.1
               with:
                 bazelisk-cache: true # avoid installing Bazel each time
                 repository-cache: true # cache repositories in `MODULE.bazel`
@@ -206,7 +206,7 @@ jobs:
             CC: "clang-22"
         steps:
             - uses: actions/checkout@v7
-            - uses: bazel-contrib/setup-bazel@0.19.0
+            - uses: bazel-contrib/setup-bazel@0.19.1
               with:
                 bazelisk-cache: true # avoid installing Bazel each time
                 repository-cache: true # cache repositories in `MODULE.bazel`
